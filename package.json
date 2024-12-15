@@ -1,0 +1,70 @@
+{
+    "name": "@zairakai/silvershade",
+    "version": "1.0.0",
+    "description": "Silvershade is a modular SCSS framework for building mobile-first, responsive layouts with a clean grid system and consistent spacing utilities.",
+    "keywords": [
+        "css",
+        "framework",
+        "grid",
+        "mobile-first",
+        "responsive",
+        "scss",
+        "spacing"
+    ],
+    "homepage": "https://gitlab.com/zairakai/npm/silvershade",
+    "bugs": {
+        "email": "contact-project+zairakai-npm-silvershade-65415760-issue-@incoming.gitlab.com"
+    },
+    "license": "MIT",
+    "author": {
+        "name": "Stanislas Poisson",
+        "nickname": "Zairakai"
+    },
+    "contributors": [
+        {
+            "name": "Stanislas Poisson",
+            "nickname": "Zairakai"
+        }
+    ],
+    "files": [
+        "src"
+    ],
+    "exports": {
+        ".": "./src/index.scss",
+        "./bases/*.scss": "./src/bases/*.scss"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://gitlab.com/zairakai/npm/silvershade.git"
+    },
+    "scripts": {
+        "all": "yarn lint; yarn scsslint; yarn pretty",
+        "all:fix": "yarn lint:fix; yarn scsslint:fix; yarn pretty:fix",
+        "lint": "yarn eslint 'eslint.config.js' 'prettier.config.js' 'stylelint.config.js' --max-warnings=0",
+        "lint:fix": "yarn eslint 'eslint.config.js' 'prettier.config.js' 'stylelint.config.js' --fix",
+        "pretty": "yarn prettier --check './src/**/*.scss' 'eslint.config.js' 'prettier.config.js' 'stylelint.config.js' 'package.json'",
+        "pretty:fix": "yarn prettier --write './src/**/*.scss' 'eslint.config.js' 'prettier.config.js' 'stylelint.config.js' 'package.json'",
+        "publish": "npm publish --access public",
+        "scsslint": "stylelint './src/**/*.scss'",
+        "scsslint:fix": "stylelint './src/**/*.scss' --fix"
+    },
+    "dependencies": {
+        "sass": "^1.83.0"
+    },
+    "devDependencies": {
+        "eslint": "^9.17.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "postcss": "^8.4.29",
+        "prettier": "^3.4.2",
+        "stylelint": "^16.12.0",
+        "stylelint-config-standard": "^36.0.1",
+        "stylelint-config-standard-scss": "^14.0.0",
+        "stylelint-scss": "^6.10.0"
+    },
+    "private": false,
+    "publishConfig": {
+        "registry": "https://gitlab.com/api/v4/projects/65415760/packages/npm/"
+    },
+    "type": "module"
+}
