@@ -1,0 +1,278 @@
+@use 'sass:map';
+@use 'sass:math';
+@use 'variables';
+@use 'functions';
+
+/**
+ * Cuts corners of an element using a `clip-path` polygon.
+ *
+ * @param {map} $values - A map of corner values (e.g., `top-left`, `top-right`).
+ * @param {string|null} $symmetry - Optional symmetry setting (e.g., `horizontal`, `vertical`).
+ *
+ * @throws Error if an invalid symmetry is provided.
+ */
+@mixin corners-cut($values, $symmetry: null) {
+    $corners: $values;
+
+    @if null != $symmetry {
+        $corners: corners-cut-symmetry($values, $symmetry);
+    }
+
+    $top-left: map.get($corners, top-left, 0);
+    $top-right: map.get($corners, top-right, 0);
+    $bottom-right: map.get($corners, bottom-right, 0);
+    $bottom-left: map.get($corners, bottom-left, 0);
+
+    /* prettier-ignore */
+    clip-path: polygon(
+        0 #{px-to-rem($top-left, (force-zero-rem: true))},
+        #{px-to-rem($top-left, (force-zero-rem: true))} 0,
+        calc(100% - #{px-to-rem($top-right, (force-zero-rem: true))}) 0,
+        100% #{px-to-rem($top-right, (force-zero-rem: true))},
+        100% calc(100% - #{px-to-rem($bottom-right, (force-zero-rem: true))}),
+        calc(100% - #{px-to-rem($bottom-right, (force-zero-rem: true))}) 100%,
+        #{px-to-rem($bottom-left, (force-zero-rem: true))} 100%,
+        0 calc(100% - #{px-to-rem($bottom-left, (force-zero-rem: true))})
+    );
+}
+
+/**
+ * Adds elevation (box-shadow) to an element.
+ *
+ * @param {number} $elevation - Elevation level (0 or higher).
+ * @param {color} $color - The shadow color (default: `var(--box-shadow-color)`).
+ */
+@mixin elevation($elevation: 0, $color: var(--box-shadow-color)) {
+    box-shadow:
+        px-to-rem(get-elevation-value($elevation, 1, 'size'))
+            color-alpha($color, get-elevation-value($elevation, 1, 'alpha')),
+        px-to-rem(get-elevation-value($elevation, 2, 'size'))
+            color-alpha($color, get-elevation-value($elevation, 2, 'alpha')),
+        px-to-rem(get-elevation-value($elevation, 3, 'size'))
+            color-alpha($color, get-elevation-value($elevation, 3, 'alpha'));
+}
+
+/**
+ * Generates media queries for responsive design.
+ *
+ * @param {string|null} $key - Breakpoint key (e.g., `sm`, `md`, or `lg`).
+ * @param {string|null} $orientation - Orientation (`portrait` or `landscape`).
+ * @param {string} $range - Range type (`min`, `max`, or `both`).
+ *
+ * @content - Content to be wrapped inside the media query.
+ *
+ * @throws Error if an invalid breakpoint or orientation is provided.
+ */
+@mixin media-queries($key: null, $orientation: null, $range: min) {
+    @each $direction, $sizes in $breakpoints {
+        @if null != $orientation or $orientation != $direction {
+            @error "Orientation '#{$orientation}' not available, use 'landscape' or 'portrait'.";
+        }
+
+        @if null != $key and not map.has-key($sizes, $key) {
+            @error "Container '#{$key}' not found for orientation '#{$orientation}'.";
+        }
+
+        @if null != $key and map.has-key($sizes, $key) {
+            $config: map.get($sizes, $key);
+
+            @include generate-media-query($config, $direction, $range) {
+                @content;
+            }
+        } @else {
+            @each $currentKey, $config in $sizes {
+                @include generate-media-query($config, $direction, $range) {
+                    @content;
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Helper mixin to generate a media query.
+ *
+ * @param {map} $config - Breakpoint configuration map (contains `min-width` and `max-width`).
+ * @param {string} $direction - Orientation (`portrait` or `landscape`).
+ * @param {string} $range - Range type (`min`, `max`, or `both`).
+ *
+ * @content - Content to be wrapped inside the media query.
+ */
+@mixin generate-media-query($config, $direction, $range) {
+    $media-query: '';
+
+    @if 'min' == $range or 'both' == $range {
+        $media-query: '#{$media-query} (min-width: #{px-to-rem(map.get($config, min-width))})';
+    }
+
+    @if 'max' == $range or 'both' == $range {
+        @if '' != $media-query {
+            $media-query: '#{$media-query} and ';
+        }
+
+        $media-query: '#{$media-query}(max-width: #{px-to-rem(map.get($config, max-width))})';
+    }
+
+    $media-query: '#{$media-query} and (orientation: #{$direction})';
+
+    @media #{$media-query} {
+        @content;
+    }
+}
+
+/**
+ * Applies a specific shape to an element using border-radius.
+ *
+ * @param {string} $shape - Shape name (e.g., `circle`, `rounded`).
+ * @param {string|null} $cornerOrSide - Specific corner or side (e.g., `top-left` or `bottom`).
+ *
+ * @throws Error if an invalid corner or side is provided.
+ */
+@mixin shape($shape, $cornerOrSide: null) {
+    $radius: map.get($shape-radius, $shape, $shape);
+
+    @if '%' != math.unit($radius) {
+        $radius: px-to-rem($radius);
+    }
+
+    $top-left: 0;
+    $top-right: 0;
+    $bottom-left: 0;
+    $bottom-right: 0;
+
+    @if 'top-left' == $cornerOrSide {
+        $top-left: $radius;
+    } @else if 'top-right' == $cornerOrSide {
+        $top-right: $radius;
+    } @else if 'bottom-left' == $cornerOrSide {
+        $bottom-left: $radius;
+    } @else if 'bottom-right' == $cornerOrSide {
+        $bottom-right: $radius;
+    } @else if 'top' == $cornerOrSide {
+        $top-left: $radius;
+        $top-right: $radius;
+    } @else if 'right' == $cornerOrSide {
+        $top-right: $radius;
+        $bottom-right: $radius;
+    } @else if 'bottom' == $cornerOrSide {
+        $bottom-left: $radius;
+        $bottom-right: $radius;
+    } @else if 'left' == $cornerOrSide {
+        $top-left: $radius;
+        $bottom-left: $radius;
+    } @else if null == $cornerOrSide {
+        $top-left: $radius;
+        $top-right: $radius;
+        $bottom-right: $radius;
+        $bottom-left: $radius;
+    } @else {
+        @error "Invalid direction `#{$cornerOrSide}`. Valid directions are: top, right, bottom, left, top-right, bottom-right, bottom-left, top-left.";
+    }
+
+    border-radius: $top-left $top-right $bottom-right $bottom-left;
+}
+
+/**
+ * Creates a triangle using borders.
+ *
+ * @param {string} $direction - Triangle direction (e.g., `up`, `down`, `left`, `right`).
+ * @param {number} $size - Size of the triangle in pixels.
+ * @param {color} $color - Triangle color (default: `currentColor`).
+ *
+ * @throws Error if an invalid direction is provided.
+ */
+@mixin triangle($direction, $size, $color: currentColor) {
+    width: 0;
+    height: 0;
+
+    @if 'up' == $direction {
+        border-left: px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: px-to-rem($size) solid $color;
+    } @else if 'right' == $direction {
+        border-top: px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: px-to-rem(math.div($size, 2)) solid transparent;
+        border-left: px-to-rem($size) solid $color;
+    } @else if 'down' == $direction {
+        border-left: px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: px-to-rem(math.div($size, 2)) solid transparent;
+        border-top: px-to-rem($size) solid $color;
+    } @else if 'left' == $direction {
+        border-top: px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: px-to-rem($size) solid $color;
+    } @else if 'top-right' == $direction {
+        border-bottom: px-to-rem($size) solid $color;
+        border-left: px-to-rem($size) solid transparent;
+    } @else if 'bottom-right' == $direction {
+        border-top: px-to-rem($size) solid $color;
+        border-left: px-to-rem($size) solid transparent;
+    } @else if 'bottom-left' == $direction {
+        border-top: px-to-rem($size) solid $color;
+        border-right: px-to-rem($size) solid transparent;
+    } @else if 'top-left' == $direction {
+        border-bottom: px-to-rem($size) solid $color;
+        border-right: px-to-rem($size) solid transparent;
+    } @else {
+        @error "Invalid direction `#{$direction}`. Valid directions are: up, right, down, left, top-right, bottom-right, bottom-left, top-left.";
+    }
+}
+
+/**
+ * Creates a flexbox layout.
+ *
+ * @param {string} $direction - Flex direction (e.g., `row`, `column`).
+ * @param {string} $justify - Justification (e.g., `flex-start`, `center`).
+ * @param {string} $align - Alignment (e.g., `stretch`, `center`).
+ * @param {string} $wrap - Wrapping behavior (`nowrap`, `wrap`).
+ */
+@mixin flexbox(
+    $direction: row,
+    $justify: flex-start,
+    $align: stretch,
+    $wrap: nowrap
+) {
+    display: flex;
+    justify-content: $justify;
+    align-items: $align;
+    flex-flow: $direction $wrap;
+}
+
+/**
+ * Creates a grid container.
+ *
+ * @param {number} $columns - Number of grid columns.
+ * @param {number|string} $gap - Gap between grid items.
+ */
+@mixin grid-container($columns: 12, $gap: 0) {
+    display: grid;
+    grid-template-columns: repeat($columns, 1fr);
+    gap: $gap;
+}
+
+/**
+ * Creates a responsive grid layout.
+ *
+ * @param {number} $columns - Number of columns (default: `$default-grid-columns`).
+ * @param {string|number} $gap - Gap size (default: small spacing).
+ */
+@mixin grid($columns: $default-grid-columns, $gap: get-spacing('sm')) {
+    display: grid;
+    grid-template-columns: repeat($columns, 1fr);
+    grid-template-rows: auto;
+    gap: px-to-rem($gap);
+}
+
+/**
+ * Adds padding to an element.
+ *
+ * @param {map} $spacings - Map of spacing values for top, right, bottom, and left.
+ */
+@mixin padding($spacings) {
+    $top: map.get($spacings, top, 0);
+    $right: map.get($spacings, right, 0);
+    $bottom: map.get($spacings, bottom, $top);
+    $left: map.get($spacings, left, $right);
+
+    padding: px-to-rem($top $right $bottom $left);
+}

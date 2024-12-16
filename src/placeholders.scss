@@ -1,0 +1,52 @@
+@use 'variables';
+@use 'functions';
+@use 'mixins';
+
+// ========================
+// Flexbox
+// ========================
+%flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+// ========================
+// Grilles
+// ========================
+%grid-center {
+    display: grid;
+    place-items: center;
+}
+
+// ========================
+// Typographie
+// ========================
+@each $hn, $value in $font-weight {
+    %h#{$hn} {
+        line-height: map.get($value, 'line-height');
+        margin: px-to-rem(map.get($value, 'margin'));
+        padding: px-to-rem(map.get($value, 'padding'));
+        font-size: map.get($value, 'size');
+        letter-spacing: map.get($value, 'spacing');
+        font-weight: map.get($value, 'weight');
+    }
+}
+
+@each $key, $value in $font-weight {
+    %font-weight-#{$key} {
+        font-weight: $value;
+    }
+}
+
+@each $key, $value in $font-size {
+    %font-size-#{$key} {
+        font-size: px-to-rem($value);
+    }
+}
+
+@each $key, $value in $line-height {
+    %line-height-#{$key} {
+        line-height: $value;
+    }
+}
