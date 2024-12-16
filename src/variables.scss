@@ -1,0 +1,603 @@
+@use 'sass:map';
+
+/**
+ * --------------------------------------------
+ * File : _variables.scss
+ * Description : Global variables (colors, spacings, typography, breakpoints).
+ * --------------------------------------------
+ */
+
+/**
+ * ========================
+ * Breakpoints
+ * ========================
+ */
+
+/**
+ * Defines breakpoints for portrait and landscape orientations.
+ * These breakpoints are used to manage responsive layouts across devices.
+ *
+ * The breakpoints are defined for both orientations (landscape and portrait) and consist of:
+ * - small, medium, large, etc. for various screen sizes
+ * - min-width and max-width in `px` converted to `rem` using the `px-to-rem` function.
+ */
+$breakpoints: (
+    landscape: (
+        small: (
+            min-width: 426px,
+            max-width: 767px,
+        ),
+        small-tablet: (
+            min-width: 768px,
+            max-width: 1023px,
+        ),
+        large-tablet: (
+            min-width: 1024px,
+            max-width: 1279px,
+        ),
+        laptop: (
+            min-width: 1280px,
+            max-width: 1439px,
+        ),
+        desktop: (
+            min-width: 1440px,
+            max-width: 1919px,
+        ),
+        wide-screen: (
+            min-width: 1920px,
+            max-width: 2560px,
+        ),
+    ),
+    portrait: (
+        small: (
+            min-width: 321px,
+            max-width: 375px,
+        ),
+        medium: (
+            min-width: 376px,
+            max-width: 425px,
+        ),
+        large: (
+            min-width: 426px,
+            max-width: 767px,
+        ),
+        small-tablet: (
+            min-width: 768px,
+            max-width: 1023px,
+        ),
+        large-tablet: (
+            min-width: 1024px,
+            max-width: 1279px,
+        ),
+        laptop: (
+            min-width: 1280px,
+            max-width: 1439px,
+        ),
+        desktop: (
+            min-width: 1440px,
+            max-width: 1919px,
+        ),
+        wide-screen: (
+            min-width: 1920px,
+            max-width: 2560px,
+        ),
+    ),
+) !default;
+
+/**
+ * ========================
+ * Container
+ * ========================
+ */
+
+/**
+ * Maximum widths for containers based on portrait and landscape orientations.
+ * Used to control adaptive sizes of main containers.
+ *
+ * Each breakpoint contains a max-width value in `rem` to maintain flexibility across devices.
+ */
+$containers: (
+    landscape: (
+        small: 667px,
+        small-tablet: 1024px,
+        large-tablet: 1366px,
+        laptop: 1280px,
+        desktop: 1440px,
+        wide-screen: 1920px,
+    ),
+    portrait: (
+        small: 320px,
+        medium: 375px,
+        large: 414px,
+        small-tablet: 768px,
+        large-tablet: 1024px,
+        laptop: 1280px,
+        desktop: 1440px,
+        wide-screen: 1920px,
+    ),
+);
+
+/**
+ * ========================
+ * Grids
+ * ========================
+ */
+
+/**
+ * Default grid
+ *
+ * Defines the default number of columns for the grid system. A 12-column grid is commonly used in responsive design.
+ */
+$default-grid-columns: 1 !default;
+
+/**
+ * CSS grid configuration for each breakpoint.
+ * Defines the number of columns and gutter sizes based on orientations and screen sizes.
+ *
+ * Each breakpoint contains:
+ * - number of columns (e.g., 2, 3, 4, etc.)
+ * - gutter size (spacing between columns) in `rem` units
+ */
+$grids: (
+    landscape: (
+        small: (
+            columns: 4,
+            gutter: 16px,
+        ),
+        small-tablet: (
+            columns: 6,
+            gutter: 24px,
+        ),
+        large-tablet: (
+            columns: 8,
+            gutter: 32px,
+        ),
+        laptop: (
+            columns: 8,
+            gutter: 32px,
+        ),
+        desktop: (
+            columns: 12,
+            gutter: 32px,
+        ),
+        wide-screen: (
+            columns: 12,
+            gutter: 32px,
+        ),
+    ),
+    portrait: (
+        small: (
+            columns: 2,
+            gutter: 16px,
+        ),
+        medium: (
+            columns: 2,
+            gutter: 16px,
+        ),
+        large: (
+            columns: 3,
+            gutter: 16px,
+        ),
+        small-tablet: (
+            columns: 4,
+            gutter: 24px,
+        ),
+        large-tablet: (
+            columns: 6,
+            gutter: 32px,
+        ),
+        laptop: (
+            columns: 8,
+            gutter: 32px,
+        ),
+        desktop: (
+            columns: 12,
+            gutter: 32px,
+        ),
+        wide-screen: (
+            columns: 12,
+            gutter: 32px,
+        ),
+    ),
+);
+
+/**
+ * ========================
+ * Spacings
+ * ========================
+ */
+
+/**
+ * Defines common spacing values used throughout the design.
+ * These are typically applied for margins, paddings, gaps, and other spacing needs.
+ *
+ * Values are stored as `rem` for consistent spacing across devices.
+ * The spacing values range from `0px` to larger values like `48px`.
+ */
+$spacings: (
+    0: 0px,
+    none: 0px,
+    1: 1px,
+    2: 2px,
+    4: 4px,
+    7: 7px,
+    8: 8px,
+    xs: 8px,
+    16: 16px,
+    sm: 16px,
+    20: 20px,
+    22: 22px,
+    24: 24px,
+    md: 24px,
+    32: 32px,
+    lg: 32px,
+    40: 40px,
+    48: 48px,
+    xl: 48px,
+) !default;
+
+/**
+ * ========================
+ * Colors
+ * ========================
+ */
+
+/**
+ * Main colors
+ *
+ * Defines the primary colors used in the design for consistency.
+ * Each color is defined using hexadecimal values.
+ */
+$color-primary: #3498db; // Blue
+$color-secondary: #2ecc71; // Green
+$color-accent: #f1c40f; // Yellow
+$color-error: #e74c3c; // Red
+$color-warning: #e67e22; // Orange
+$color-success: #27ae60; // Success green
+
+// Neutral colors
+$color-background: #fff; // White
+$color-background-dark: #2c3e50; // Dark background
+$color-text-dark: #34495e; // Dark text
+$color-text-light: #ecf0f1; // Light text
+
+/**
+ * ========================
+ * Typography
+ * ========================
+ */
+
+/**
+ * Default font-size
+ *
+ * Defines the default font-size.
+ */
+$default-font-size: 16 !default;
+
+/**
+ * Font family map
+ * ========================
+ * Defines the font families used throughout the design for consistency.
+ * - `sans`: Sans-serif fonts
+ * - `mono`: Monospaced fonts
+ */
+$font-family: (
+    sans: "'Helvetica Neue', arial, sans-serif,",
+    mono: "'Courier New', monospace,",
+) !default;
+
+/**
+ * Font weight map
+ * ========================
+ * Defines the font weights for different text elements.
+ * - light: 300
+ * - base: 400
+ * - bold: 700
+ */
+$font-weight: (
+    light: 300,
+    base: 400,
+    bold: 700,
+) !default;
+
+/**
+ * Font size map
+ * ========================
+ * Defines the font sizes for various text elements in `rem` units.
+ * The base font size is `16px`, and other sizes are defined relative to it.
+ */
+$font-size: (
+    14: 14px,
+    base: 16px,
+    16: 16px,
+    18: 18px,
+    20: 20px,
+    22: 22px,
+    24: 24px,
+    26: 26px,
+    28: 28px,
+    32: 32px,
+    34: 34px,
+    36: 36px,
+    38: 38px,
+    40: 40px,
+    42: 42px,
+    44: 44px,
+    46: 46px,
+    48: 48px,
+    50: 50px,
+    52: 52px,
+    54: 54px,
+    56: 56px,
+    58: 58px,
+) !default;
+
+/**
+ * Fluid typography
+ * ========================
+ * Defines the font size that adapts fluidly to the screen size, enabling a scalable design across devices.
+ * Uses a `min()` and `max()` function to determine the font size based on the screen's width.
+ */
+$font-size-fluid: (
+    sm: (
+        min: map.get($font-size, 14),
+        fluid: 1.4vw,
+        max: map.get($font-size, base),
+    ),
+    base: (
+        min: map.get($font-size, base),
+        fluid: 1.6vw,
+        max: map.get($font-size, 18),
+    ),
+    md: (
+        min: map.get($font-size, 18),
+        fluid: 2vw,
+        max: map.get($font-size, 20),
+    ),
+    lg: (
+        min: map.get($font-size, 20),
+        fluid: 2.4vw,
+        max: map.get($font-size, 24),
+    ),
+    xl: (
+        min: map.get($font-size, 24),
+        fluid: 3vw,
+        max: map.get($font-size, 26),
+    ),
+    h6: (
+        min: map.get($font-size, 16),
+        fluid: 1.2vw,
+        max: map.get($font-size, 20),
+    ),
+    h5: (
+        min: map.get($font-size, 20),
+        fluid: 1.5vw,
+        max: map.get($font-size, 24),
+    ),
+    h4: (
+        min: map.get($font-size, 24),
+        fluid: 2vw,
+        max: map.get($font-size, 28),
+    ),
+    h3: (
+        min: map.get($font-size, 28),
+        fluid: 2.5vw,
+        max: map.get($font-size, 30),
+    ),
+    h2: (
+        min: map.get($font-size, 30),
+        fluid: 3vw,
+        max: map.get($font-size, 32),
+    ),
+    h1: (
+        min: map.get($font-size, 32),
+        fluid: 4vw,
+        max: map.get($font-size, 34),
+    ),
+) !default;
+
+/**
+ * Line Heights
+ * ========================
+ * Defines line heights for various text elements. These are used to ensure appropriate vertical spacing between lines of text.
+ */
+$line-height: (
+    base: 1.2,
+    3: 1.3,
+    4: 1.4,
+    5: 1.5,
+    6: 1.6,
+) !default;
+
+/**
+ * Headings Styles
+ * ========================
+ * Map defining styles for each heading level (h1 to h6).
+ * Includes margins, paddings, line height, font size, weight, and letter spacing.
+ */
+$headings: (
+    1: (
+        line-height: map.get($line-height, base),
+        margin: 0px 0px 16px 0px,
+        padding: 0px,
+        size: calculate-fluid-font(
+                map.get(map.get($font-size-fluid, h1), min),
+                map.get(map.get($font-size-fluid, h1), fluid),
+                map.get(map.get($font-size-fluid, h1), max)
+            ),
+        spacing: -1.5,
+        weight: map.get($font-weight, light),
+    ),
+    2: (
+        line-height: map.get($line-height, 3),
+        margin: 0px 0px 12px 0px,
+        padding: 0px,
+        size: calculate-fluid-font(
+                map.get(map.get($font-size-fluid, h2), min),
+                map.get(map.get($font-size-fluid, h2), fluid),
+                map.get(map.get($font-size-fluid, h2), max)
+            ),
+        spacing: -0.5,
+        weight: map.get($font-weight, light),
+    ),
+    3: (
+        line-height: map.get($line-height, 4),
+        margin: 0px 0px 8px 0px,
+        padding: 0px,
+        size: calculate-fluid-font(
+                map.get(map.get($font-size-fluid, h3), min),
+                map.get(map.get($font-size-fluid, h3), fluid),
+                map.get(map.get($font-size-fluid, h3), max)
+            ),
+        spacing: 0,
+        weight: map.get($font-weight, base),
+    ),
+    4: (
+        line-height: map.get($line-height, 5),
+        margin: 0px 0px 8px 0px,
+        padding: 0px,
+        size: calculate-fluid-font(
+                map.get(map.get($font-size-fluid, h4), min),
+                map.get(map.get($font-size-fluid, h4), fluid),
+                map.get(map.get($font-size-fluid, h4), max)
+            ),
+        spacing: 0.25,
+        weight: map.get($font-weight, base),
+    ),
+    5: (
+        line-height: map.get($line-height, 6),
+        margin: 0px 0px 6px 0px,
+        padding: 0px,
+        size: calculate-fluid-font(
+                map.get(map.get($font-size-fluid, h5), min),
+                map.get(map.get($font-size-fluid, h5), fluid),
+                map.get(map.get($font-size-fluid, h5), max)
+            ),
+        spacing: 0,
+        weight: map.get($font-weight, base),
+    ),
+    6: (
+        line-height: map.get($line-height, 6),
+        margin: 0px 0px 6px 0px,
+        padding: 0px,
+        0
+            size: calculate-fluid-font(
+                map.get(map.get($font-size-fluid, h6), min),
+                map.get(map.get($font-size-fluid, h6), fluid),
+                map.get(map.get($font-size-fluid, h6), max)
+            ),
+        spacing: 0.25,
+        weight: map.get($font-weight, bold),
+    ),
+) !default;
+
+/**
+ * ========================
+ * Shapes
+ * ========================
+ * Defines border radius for different elements to control their rounded corners.
+ * Can be defined in pixels or percentage for circular elements.
+ */
+$shape-radius: (
+    0: 0px,
+    1: 4px,
+    2: 8px,
+    3: 10px,
+    4: 16px,
+    5: 22px,
+    6: 50%,
+);
+
+/**
+ * ========================
+ * Elevations
+ * ========================
+ * Defines different shadow elevations for various UI components.
+ * The `alpha` values control the transparency, and `size` defines the spread and blur of the shadow.
+ */
+$elevations: (
+    0: (
+        1: (
+            alpha: 0.2,
+            size: 0px 0px 0px 0px,
+        ),
+        2: (
+            alpha: 0.14,
+            size: 0px 0px 0px 0px,
+        ),
+        3: (
+            alpha: 0.12,
+            size: 0px 0px 0px 0px,
+        ),
+    ),
+    1: (
+        1: (
+            alpha: 0.2,
+            size: 0px 2px 1px -1px,
+        ),
+        2: (
+            alpha: 0.14,
+            size: 0px 1px 1px 0px,
+        ),
+        3: (
+            alpha: 0.12,
+            size: 0px 1px 3px 0px,
+        ),
+    ),
+    2: (
+        1: (
+            alpha: 0.2,
+            size: 0px 3px 3px -2px,
+        ),
+        2: (
+            alpha: 0.14,
+            size: 0px 3px 4px 0px,
+        ),
+        3: (
+            alpha: 0.12,
+            size: 0px 1px 8px 0px,
+        ),
+    ),
+    3: (
+        1: (
+            alpha: 0.2,
+            size: 0px 3px 5px -1px,
+        ),
+        2: (
+            alpha: 0.14,
+            size: 0px 6px 10px 0px,
+        ),
+        3: (
+            alpha: 0.12,
+            size: 0px 1px 18px 0px,
+        ),
+    ),
+    4: (
+        1: (
+            alpha: 0.2,
+            size: 0px 5px 5px -3px,
+        ),
+        2: (
+            alpha: 0.14,
+            size: 0px 8px 10px 1px,
+        ),
+        3: (
+            alpha: 0.12,
+            size: 0px 3px 14px 2px,
+        ),
+    ),
+    5: (
+        1: (
+            alpha: 0.2,
+            size: 0px 7px 8px -4px,
+        ),
+        2: (
+            alpha: 0.14,
+            size: 0px 12px 17px 2px,
+        ),
+        3: (
+            alpha: 0.12,
+            size: 0px 5px 22px 4px,
+        ),
+    ),
+) !default;

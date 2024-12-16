@@ -1,0 +1,25 @@
+@use 'variables';
+@use 'functions';
+@use 'mixins';
+
+@each $key, $value in $spacings {
+    %p-#{$key} {
+        padding: px-to-rem($value);
+    }
+
+    %pt-#{$key} {
+        padding-top: px-to-rem($value);
+    }
+
+    %pr-#{$key} {
+        padding-right: px-to-rem($value);
+    }
+
+    %pb-#{$key} {
+        padding-bottom: px-to-rem($value);
+    }
+
+    %pl-#{$key} {
+        padding-left: px-to-rem($value);
+    }
+}

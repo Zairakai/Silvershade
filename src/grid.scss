@@ -1,0 +1,25 @@
+@use 'variables';
+@use 'functions';
+@use 'mixins';
+
+// Classe de base pour une grille
+%grid {
+    @include grid;
+
+    @each $direction, $sizes in $grids {
+        @each $size, $config in $sizes {
+            @include media-queries($size, $direction) {
+                @include grid(
+                    map.get($config, 'columns'),
+                    map.get($config, 'gutter')
+                );
+            }
+        }
+    }
+}
+
+@for $i from 1 to 13 {
+    %grid-cols-#{$i} {
+        @include grid($i);
+    }
+}
