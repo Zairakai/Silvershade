@@ -329,17 +329,31 @@
  * Applies transparency to a color by setting its alpha value.
  *
  * @param {color} $color - The color to modify.
+ * @param {boolean} $as-rgb - If return the color in rgb or in list values.
+ *
+ * @return {color, list} - The transparentized color.
+ */
+@function color-rgb($color, $as-rgb: true) {
+    $rgb: color.channel($color, 'red'), color.channel($color, 'green'),
+        color.channel($color, 'blue');
+
+    @if true == $as-rgb {
+        @return rgb($rgb);
+    }
+
+    @return $rgb;
+}
+
+/**
+ * Applies transparency to a color by setting its alpha value.
+ *
+ * @param {color} $color - The color to modify.
  * @param {number} $opacity - The desired opacity (default: 0.5).
  *
  * @return {color} - The transparentized color.
  */
 @function color-alpha($color, $opacity: 0.5) {
-    @return rgba(
-        color.channel($color, 'red'),
-        color.channel($color, 'green'),
-        color.channel($color, 'blue'),
-        $opacity
-    );
+    @return rgba(color-rgb($color, false), $opacity);
 }
 
 /**
@@ -360,4 +374,51 @@
 
     // Return the calculated fluid font size using clamp()
     @return clamp(px-to-rem($min), #{$fluid-size}vw, px-to-rem($max));
+}
+
+/**
+ * Adjusts the primary color to avoid problematic color ranges for vision deficiencies.
+ *
+ * @param {color} $color - The color to be adjusted.
+ * @param {string} [$deficiency=''] - The deficiency type ('protanopia', 'deuteranopia', 'tritanopia').
+ * @param {int} $iterations - The number of iterations to try (to avoid infinite loops).
+ *
+ * @return {color} - The adjusted color.
+ */
+@function adjust-for-deficiency($color, $deficiency: '', $iterations: 3) {
+    @if $iterations <= 0 {
+        @return $color;
+    }
+
+    $hue: color.channel($color, 'hue');
+
+    // Adjust the color for protanopia (red perception issue)
+    @if 'protanopia' == $deficiency and 0deg <= $hue and $hue <= 20deg {
+        @return adjust-for-deficiency(
+            color.adjust($color, $hue: -20deg),
+            $deficiency,
+            $iterations - 1
+        );
+    }
+
+    // Adjust the color for deutranopia (green perception issue)
+    @else if 'deuteranopia' == $deficiency and 70deg <= $hue and $hue <= 170deg
+    {
+        @return adjust-for-deficiency(
+            color.adjust($color, $hue: 20deg),
+            $deficiency,
+            $iterations - 1
+        );
+    }
+
+    // Adjust the color for tritanopia (blue perception issue)
+    @else if 'tritanopia' == $deficiency and 180deg <= $hue and $hue <= 220deg {
+        @return adjust-for-deficiency(
+            color.adjust($color, $hue: 20deg),
+            $deficiency,
+            $iterations - 1
+        );
+    }
+
+    @return $color;
 }

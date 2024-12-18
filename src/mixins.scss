@@ -276,3 +276,113 @@
 
     padding: px-to-rem($top $right $bottom $left);
 }
+
+/**
+ * Generates a theme for a given primary color and theme name, including variations for color vision deficiencies.
+ *
+ * @param {color} $primary - The primary color for the theme (e.g., #3498db).
+ * @param {string} $theme-name - The name of the theme (e.g., "dark-mode").
+ */
+@mixin theme($primary, $theme-name) {
+    @each $value in ('', 'protanopia', 'deuteranopia', 'tritanopia') {
+        @include generate-theme($primary, $theme-name, $value);
+    }
+}
+
+/**
+ * Generates a theme with color adjustments based on a specific vision deficiency and applies CSS variables.
+ * This includes handling the color adjustment process until a valid color is found.
+ *
+ * @param {color} $primary - The base primary color to be adjusted (e.g., #3498db).
+ * @param {string} $theme-name - The name of the theme (e.g., "dark-mode").
+ * @param {string} [$deficiency=''] - The vision deficiency type ('', 'protanopia', 'deuteranopia', 'tritanopia').
+ */
+@mixin generate-theme($primary, $theme-name, $deficiency: '') {
+    // Initial adjustment based on deficiency
+    @if 'protanopia' == $deficiency {
+        $theme-name: #{$theme-name}-#{$deficiency};
+        $adjusted-primary: adjust-for-deficiency(
+            color.adjust($primary, $hue: -40deg),
+            $deficiency
+        );
+    } @else if 'deuteranopia' == $deficiency {
+        $theme-name: #{$theme-name}-#{$deficiency};
+        $adjusted-primary: adjust-for-deficiency(
+            color.adjust($primary, $hue: -30deg),
+            $deficiency
+        );
+    } @else if 'tritanopia' == $deficiency {
+        $theme-name: #{$theme-name}-#{$deficiency};
+        $adjusted-primary: adjust-for-deficiency(
+            color.adjust($primary, $hue: 30deg),
+            $deficiency
+        );
+    } @else {
+        $adjusted-primary: $primary;
+    }
+
+    $complementary: color.adjust($adjusted-primary, $hue: 180deg);
+    $analogous-1: color.adjust($adjusted-primary, $hue: -30deg);
+    $analogous-2: color.adjust($adjusted-primary, $hue: 30deg);
+    $triadic-1: color.adjust($adjusted-primary, $hue: 120deg);
+    $triadic-2: color.adjust($adjusted-primary, $hue: -120deg);
+    $accent: color.adjust($adjusted-primary, $hue: 60deg);
+    $neutral-light: color.mix($adjusted-primary, #fff, 80%);
+    $neutral-dark: color.mix($adjusted-primary, #000, 80%);
+    $text-color: color.mix(#000, $adjusted-primary, 20%);
+    $bg-color: color.mix(#fff, $adjusted-primary, 10%);
+    $border-color: color.mix(#000, $adjusted-primary, 50%);
+    $primary-hover: color.adjust($adjusted-primary, $lightness: 10%);
+    $primary-focus: color.adjust($adjusted-primary, $lightness: -10%);
+    $primary-active: color.adjust($adjusted-primary, $lightness: -15%);
+    $primary-disabled: color.adjust($adjusted-primary, $lightness: 30%);
+    $success-color: color.mix($adjusted-primary, #0f0, 50%);
+    $warning-color: color.mix($adjusted-primary, #f90, 50%);
+    $error-color: color.mix($adjusted-primary, #f00, 50%);
+    $info-color: color.mix($adjusted-primary, #39f, 50%);
+    $shadow-light: rgb(0 0 0 / 10%);
+    $shadow-dark: rgb(0 0 0 / 50%);
+    $gradient-primary: linear-gradient(
+        45deg,
+        $adjusted-primary,
+        color.adjust($adjusted-primary, $lightness: 30%)
+    );
+    $gradient-accent: linear-gradient(
+        45deg,
+        color.adjust($adjusted-primary, $lightness: 10%),
+        $adjusted-primary
+    );
+    $opacity-light: 0.2;
+    $opacity-dark: 0.5;
+
+    [data-theme='#{$theme-name}'] {
+        :root {
+            --primary-color: #{$adjusted-primary};
+            --complementary: #{$complementary};
+            --analogous-1: #{$analogous-1};
+            --analogous-2: #{$analogous-2};
+            --triadic-1: #{$triadic-1};
+            --triadic-2: #{$triadic-2};
+            --accent: #{$accent};
+            --neutral-light: #{$neutral-light};
+            --neutral-dark: #{$neutral-dark};
+            --text-color: #{$text-color};
+            --bg-color: #{$bg-color};
+            --border-color: #{$border-color};
+            --success-color: #{$success-color};
+            --warning-color: #{$warning-color};
+            --error-color: #{$error-color};
+            --info-color: #{$info-color};
+            --shadow-light: #{$shadow-light};
+            --shadow-dark: #{$shadow-dark};
+            --gradient-primary: #{$gradient-primary};
+            --gradient-accent: #{$gradient-accent};
+            --opacity-light: #{$opacity-light};
+            --opacity-dark: #{$opacity-dark};
+            --primary-hover: #{$primary-hover};
+            --primary-focus: #{$primary-focus};
+            --primary-active: #{$primary-active};
+            --primary-disabled: #{$primary-disabled};
+        }
+    }
+}

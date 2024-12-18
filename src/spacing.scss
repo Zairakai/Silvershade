@@ -22,4 +22,48 @@
     %pl-#{$key} {
         padding-left: px-to-rem($value);
     }
+
+    %pv-#{$key} {
+        padding-top: px-to-rem($value);
+        padding-bottom: px-to-rem($value);
+    }
+
+    %ph-#{$key} {
+        padding-right: px-to-rem($value);
+        padding-left: px-to-rem($value);
+    }
+
+    %m-#{$key} {
+        margin: px-to-rem($value);
+    }
+
+    %mt-#{$key} {
+        margin-top: px-to-rem($value);
+    }
+
+    %mr-#{$key} {
+        margin-right: px-to-rem($value);
+    }
+
+    %mb-#{$key} {
+        margin-bottom: px-to-rem($value);
+    }
+
+    %ml-#{$key} {
+        margin-left: px-to-rem($value);
+    }
+
+    %mv-#{$key} {
+        margin-top: px-to-rem($value);
+        margin-bottom: px-to-rem($value);
+    }
+
+    %mh-#{$key} {
+        margin-right: px-to-rem($value);
+        margin-left: px-to-rem($value);
+    }
+
+    %gap-#{$key} {
+        gap: px-to-rem($value);
+    }
 }
