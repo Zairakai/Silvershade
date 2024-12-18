@@ -1,0 +1,407 @@
+@use '../index';
+
+/* Document
+========================================================================== */
+* {
+    box-sizing: border-box; /* Ensure box-sizing includes padding and border in width and height calculations */
+}
+
+/**
+ * 1. Set default line height for consistent spacing across all browsers.
+ * 2. Prevent font size adjustment on orientation change in iOS.
+ */
+html {
+    font-family: sans-serif;
+    line-height: 1.15; /* 1 */
+    text-size-adjust: 100%; /* 2 */
+}
+
+/* Sections
+========================================================================== */
+html,
+body {
+    min-height: 100%; /* Fix issues with old browsers not respecting viewport units */
+    min-height: 100vh; /* Ensure minimum height matches the viewport height */
+}
+
+/* Remove default margin and padding from the body element */
+body {
+    position: relative; /* Allow positioning of child elements without disrupting layout */
+    margin: 0;
+    padding: 0;
+}
+
+/* Render HTML5 elements consistently in older browsers like IE 8/9 */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+    display: block;
+}
+
+/**
+ * 1. Fix missing `inline-block` styling in older versions of IE (8/9).
+ * 2. Normalize vertical alignment for media and progress elements across browsers.
+ */
+audio,
+canvas,
+progress,
+video {
+    display: inline-block; /* 1 */
+    vertical-align: baseline; /* 2 */
+}
+
+/**
+ * Hide audio elements without controls in modern browsers.
+ * Fix extra height issues on older iOS devices.
+ */
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+/* Grouping content
+========================================================================== */
+
+/**
+ * 1. Ensure correct box-sizing in Firefox for hr elements.
+ * 2. Allow overflow to be visible in Edge and IE.
+ */
+hr {
+    box-sizing: content-box; /* 1 */
+    height: 0; /* 1 */
+    overflow: visible; /* 2 */
+}
+
+/**
+ * 1. Fix inheritance and scaling of font size across all browsers.
+ * 2. Address incorrect `em` font sizing behavior in various browsers.
+ */
+pre {
+    overflow: auto; /* Allow scrolling for long content */
+}
+
+/* Text-level semantics
+========================================================================== */
+
+/* Remove the gray background on active links in IE 10. */
+a {
+    background-color: transparent;
+}
+
+/* Improve readability when links are focused or hovered in all browsers. */
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/**
+ * 1. Remove default bottom border for abbreviations in older Chrome versions.
+ * 2. Apply consistent text decoration for abbreviations in major browsers.
+ */
+abbr[title] {
+    border-bottom: px-to-rem(1) dotted; /* 1 */
+}
+
+/* Apply proper bold styling for text in Chrome, Edge, and Safari. */
+b,
+strong {
+    font-weight: bold;
+}
+
+/* Ensure correct italic styling for definitions in Safari and Chrome. */
+dfn {
+    font-style: italic;
+}
+
+/* Add basic styling for marked text in IE 8/9. */
+mark {
+    background: #ff0; /* Highlight with yellow background */
+    color: #000; /* Use black text color for readability */
+}
+
+/**
+ * 1. Fix inheritance and scaling of font size for code-related elements in all browsers.
+ * 2. Address odd `em` font sizing behavior across browsers.
+ */
+code,
+kbd,
+pre,
+samp {
+    font-family: monospace; /* 1 */
+    font-size: px-to-rem(16); /* 2 */
+}
+
+/**
+ * Ensure small text renders at the correct size across all browsers.
+ */
+small {
+    font-size: 80%; /* Scale text to 80% of the parent element's font size */
+}
+
+/**
+ * Prevent `sub` and `sup` elements from impacting line height in all browsers.
+ * Position them relative to their normal baseline placement.
+ */
+sub,
+sup {
+    font-size: 75%; /* Scale text to 75% of the parent element's font size */
+    line-height: 0; /* Prevent additional height from being added */
+    position: relative; /* Enable manual positioning */
+    vertical-align: baseline; /* Align with baseline */
+}
+
+/* Offset `sub` elements downward relative to the baseline. */
+sub {
+    bottom: px-to-rem(-4); /* Adjust position for proper placement */
+}
+
+/* Offset `sup` elements upward relative to the baseline. */
+sup {
+    top: px-to-rem(-8); /* Adjust position for proper placement */
+}
+
+/* Embedded content
+========================================================================== */
+
+/* Remove borders around images within links in IE 10. */
+img {
+    display: inline-block; /* Ensure proper layout in inline contexts */
+    border: none; /* Remove default border around linked images */
+    max-width: 100%; /* Scale images to fit their container */
+}
+
+/* Fix overflow issues in SVG elements in IE 9/10/11. */
+svg:not(:root) {
+    overflow: hidden; /* Prevent content from spilling outside its bounds */
+}
+
+/* Add consistent margins for figure elements in IE 8/9 and Safari. */
+figure {
+    margin: px-to-rem(
+        16 40
+    ); /* Set default top/bottom and left/right margins */
+}
+
+/* Forms
+========================================================================== */
+
+/**
+ * 1. Ensure consistent font styles across browsers.
+ * 2. Remove default margins in Firefox and Safari.
+ */
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit; /* 1 */
+    font-size: 100%; /* 1 */
+    line-height: normal; /* 1 */
+    color: inherit; /* 1 */
+    margin: 0; /* 2 */
+}
+
+/**
+  * Prevent hidden overflow in IE and Edge.
+  */
+button,
+input {
+    overflow: visible; /* Fix for IE/Edge */
+}
+
+/**
+  * Prevent text-transform inheritance in Edge, Firefox, and IE.
+  */
+button,
+select {
+    text-transform: none; /* Fix inheritance issue */
+}
+
+/**
+  * Ensure clickable elements are stylable in iOS and Safari.
+  */
+button,
+html input[type='button'],
+[type='button'],
+html input[disabled],
+[disabled],
+[type='reset'],
+[type='submit'] {
+    appearance: button; /* Restore button-like appearance */
+    cursor: pointer; /* Improve UX for clickable elements */
+}
+
+/**
+  * Revert cursor to default for disabled elements.
+  */
+button[disabled],
+html input[disabled] {
+    cursor: default; /* Disabled elements should not appear clickable */
+}
+
+/**
+  * Remove inner borders and padding in Firefox.
+  */
+button::-moz-focus-inner,
+[type='button']::-moz-focus-inner,
+[type='reset']::-moz-focus-inner,
+[type='submit']::-moz-focus-inner {
+    border: none; /* Remove inner border */
+    padding: 0; /* Reset padding */
+}
+
+/**
+  * Restore focus styles removed by the previous rule for accessibility.
+  */
+button:-moz-focusring,
+[type='button']:-moz-focusring,
+[type='reset']:-moz-focusring,
+[type='submit']:-moz-focusring {
+    outline: px-to-rem(1) dotted #1a1f21; /* Add dotted outline */
+}
+
+/**
+  * Add consistent padding and border styling in Firefox.
+  */
+fieldset {
+    border: px-to-rem(1) solid #c0c0c0; /* Define border */
+    margin: px-to-rem(0 2); /* Reset margins */
+    padding: px-to-rem(6) px-to-rem(12) px-to-rem(10); /* Adjust padding */
+}
+
+/**
+  * 1. Fix text wrapping in Edge and IE.
+  * 2. Correct color inheritance in IE.
+  * 3. Remove default padding to avoid unexpected styles.
+  */
+legend {
+    box-sizing: border-box; /* Ensure consistent box sizing */
+    color: inherit; /* Ensure color is inherited */
+    display: table; /* Fix layout issues */
+    max-width: 100%; /* Prevent overflow */
+    border: 0; /* Remove default border */
+    padding: 0; /* Remove default padding */
+    white-space: normal; /* Fix text wrapping */
+}
+
+/**
+  * Ensure vertical alignment of progress elements in Chrome, Firefox, and Opera.
+  */
+progress {
+    vertical-align: baseline; /* Align with text baseline */
+}
+
+/**
+  * Remove default scrollbar from textareas in IE 10+.
+  */
+textarea {
+    overflow: auto; /* Enable scroll when necessary */
+}
+
+/**
+  * Prevent font-weight inheritance for `optgroup` elements.
+  */
+optgroup {
+    font-weight: bold; /* Default font weight for better readability */
+}
+
+/**
+  * 1. Apply consistent box-sizing in IE 10.
+  * 2. Remove default padding in IE 10.
+  */
+[type='checkbox'],
+[type='radio'] {
+    box-sizing: border-box; /* Ensure consistent sizing */
+    padding: 0; /* Remove padding */
+}
+
+/**
+  * Fix cursor styling for increment/decrement buttons in Chrome.
+  */
+[type='number']::-webkit-inner-spin-button,
+[type='number']::-webkit-outer-spin-button {
+    height: auto; /* Adjust height for consistent appearance */
+}
+
+/**
+  * 1. Correct appearance issues in Chrome and Safari.
+  * 2. Fix outline offset in Safari.
+  */
+[type='search'] {
+    box-sizing: content-box; /* Consistent box model */
+    appearance: textfield; /* Fix odd appearance */
+    outline-offset: px-to-rem(-2); /* Adjust outline spacing */
+}
+
+/**
+  * Remove inner padding from search fields in Chrome and Safari on macOS.
+  */
+[type='search']::-webkit-search-decoration {
+    appearance: none; /* Remove decoration */
+}
+
+/**
+  * 1. Enable styling for file upload buttons in iOS and Safari.
+  * 2. Ensure font styles are inherited in Safari.
+  */
+::-webkit-file-upload-button {
+    appearance: button; /* Fix appearance */
+    font: inherit; /* Inherit font properties */
+}
+
+/* Interactive
+========================================================================== */
+
+/**
+ * Ensure proper display behavior for `<details>` elements in Edge, IE 10+, and Firefox.
+ */
+details {
+    display: block; /* Default block-level element */
+}
+
+/**
+ * Correct the display of `<summary>` in all browsers to behave like a list item.
+ */
+summary {
+    display: list-item; /* Matches expected semantics */
+}
+
+/* Misc
+========================================================================== */
+
+/**
+ * Ensure hidden elements and `<template>` are not displayed in IE 10.
+ */
+[hidden],
+template {
+    display: none; /* Completely hide elements */
+}
+
+/* Tables
+========================================================================== */
+
+/**
+ * Remove default spacing between table cells for consistent layout.
+ */
+table {
+    border-collapse: collapse; /* Merge adjacent borders */
+    border-spacing: 0; /* Eliminate gaps between cells */
+}
+
+/**
+ * Remove default padding from table cells.
+ */
+td,
+th {
+    padding: 0; /* Reset padding to avoid inconsistent spacing */
+}
