@@ -1,0 +1,388 @@
+@use 'sass:map';
+@use 'sass:math';
+@use 'variables';
+@use 'functions';
+
+/**
+ * Cuts corners of an element using a `clip-path` polygon.
+ *
+ * @param {map} $values - A map of corner values (e.g., `top-left`, `top-right`).
+ * @param {string|null} $symmetry - Optional symmetry setting (e.g., `horizontal`, `vertical`).
+ *
+ * @throws Error if an invalid symmetry is provided.
+ */
+@mixin corners-cut($values, $symmetry: null) {
+    $corners: $values;
+
+    @if null != $symmetry {
+        $corners: corners-cut-symmetry($values, $symmetry);
+    }
+
+    $top-left: map.get($corners, top-left, 0);
+    $top-right: map.get($corners, top-right, 0);
+    $bottom-right: map.get($corners, bottom-right, 0);
+    $bottom-left: map.get($corners, bottom-left, 0);
+
+    /* prettier-ignore */
+    clip-path: polygon(
+        0 #{px-to-rem($top-left, (force-zero-rem: true))},
+        #{px-to-rem($top-left, (force-zero-rem: true))} 0,
+        calc(100% - #{px-to-rem($top-right, (force-zero-rem: true))}) 0,
+        100% #{px-to-rem($top-right, (force-zero-rem: true))},
+        100% calc(100% - #{px-to-rem($bottom-right, (force-zero-rem: true))}),
+        calc(100% - #{px-to-rem($bottom-right, (force-zero-rem: true))}) 100%,
+        #{px-to-rem($bottom-left, (force-zero-rem: true))} 100%,
+        0 calc(100% - #{px-to-rem($bottom-left, (force-zero-rem: true))})
+    );
+}
+
+/**
+ * Adds elevation (box-shadow) to an element.
+ *
+ * @param {number} $elevation - Elevation level (0 or higher).
+ * @param {color} $color - The shadow color (default: `var(--box-shadow-color)`).
+ */
+@mixin elevation($elevation: 0, $color: var(--box-shadow-color)) {
+    box-shadow:
+        px-to-rem(get-elevation-value($elevation, 1, 'size'))
+            color-alpha($color, get-elevation-value($elevation, 1, 'alpha')),
+        px-to-rem(get-elevation-value($elevation, 2, 'size'))
+            color-alpha($color, get-elevation-value($elevation, 2, 'alpha')),
+        px-to-rem(get-elevation-value($elevation, 3, 'size'))
+            color-alpha($color, get-elevation-value($elevation, 3, 'alpha'));
+}
+
+/**
+ * Generates media queries for responsive design.
+ *
+ * @param {string|null} $key - Breakpoint key (e.g., `sm`, `md`, or `lg`).
+ * @param {string|null} $orientation - Orientation (`portrait` or `landscape`).
+ * @param {string} $range - Range type (`min`, `max`, or `both`).
+ *
+ * @content - Content to be wrapped inside the media query.
+ *
+ * @throws Error if an invalid breakpoint or orientation is provided.
+ */
+@mixin media-queries($key: null, $orientation: null, $range: min) {
+    @each $direction, $sizes in $breakpoints {
+        @if null != $orientation or $orientation != $direction {
+            @error "Orientation '#{$orientation}' not available, use 'landscape' or 'portrait'.";
+        }
+
+        @if null != $key and not map.has-key($sizes, $key) {
+            @error "Container '#{$key}' not found for orientation '#{$orientation}'.";
+        }
+
+        @if null != $key and map.has-key($sizes, $key) {
+            $config: map.get($sizes, $key);
+
+            @include generate-media-query($config, $direction, $range) {
+                @content;
+            }
+        } @else {
+            @each $currentKey, $config in $sizes {
+                @include generate-media-query($config, $direction, $range) {
+                    @content;
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Helper mixin to generate a media query.
+ *
+ * @param {map} $config - Breakpoint configuration map (contains `min-width` and `max-width`).
+ * @param {string} $direction - Orientation (`portrait` or `landscape`).
+ * @param {string} $range - Range type (`min`, `max`, or `both`).
+ *
+ * @content - Content to be wrapped inside the media query.
+ */
+@mixin generate-media-query($config, $direction, $range) {
+    $media-query: '';
+
+    @if 'min' == $range or 'both' == $range {
+        $media-query: '#{$media-query} (min-width: #{px-to-rem(map.get($config, min-width))})';
+    }
+
+    @if 'max' == $range or 'both' == $range {
+        @if '' != $media-query {
+            $media-query: '#{$media-query} and ';
+        }
+
+        $media-query: '#{$media-query}(max-width: #{px-to-rem(map.get($config, max-width))})';
+    }
+
+    $media-query: '#{$media-query} and (orientation: #{$direction})';
+
+    @media #{$media-query} {
+        @content;
+    }
+}
+
+/**
+ * Applies a specific shape to an element using border-radius.
+ *
+ * @param {string} $shape - Shape name (e.g., `circle`, `rounded`).
+ * @param {string|null} $cornerOrSide - Specific corner or side (e.g., `top-left` or `bottom`).
+ *
+ * @throws Error if an invalid corner or side is provided.
+ */
+@mixin shape($shape, $cornerOrSide: null) {
+    $radius: map.get($shape-radius, $shape, $shape);
+
+    @if '%' != math.unit($radius) {
+        $radius: px-to-rem($radius);
+    }
+
+    $top-left: 0;
+    $top-right: 0;
+    $bottom-left: 0;
+    $bottom-right: 0;
+
+    @if 'top-left' == $cornerOrSide {
+        $top-left: $radius;
+    } @else if 'top-right' == $cornerOrSide {
+        $top-right: $radius;
+    } @else if 'bottom-left' == $cornerOrSide {
+        $bottom-left: $radius;
+    } @else if 'bottom-right' == $cornerOrSide {
+        $bottom-right: $radius;
+    } @else if 'top' == $cornerOrSide {
+        $top-left: $radius;
+        $top-right: $radius;
+    } @else if 'right' == $cornerOrSide {
+        $top-right: $radius;
+        $bottom-right: $radius;
+    } @else if 'bottom' == $cornerOrSide {
+        $bottom-left: $radius;
+        $bottom-right: $radius;
+    } @else if 'left' == $cornerOrSide {
+        $top-left: $radius;
+        $bottom-left: $radius;
+    } @else if null == $cornerOrSide {
+        $top-left: $radius;
+        $top-right: $radius;
+        $bottom-right: $radius;
+        $bottom-left: $radius;
+    } @else {
+        @error "Invalid direction `#{$cornerOrSide}`. Valid directions are: top, right, bottom, left, top-right, bottom-right, bottom-left, top-left.";
+    }
+
+    border-radius: $top-left $top-right $bottom-right $bottom-left;
+}
+
+/**
+ * Creates a triangle using borders.
+ *
+ * @param {string} $direction - Triangle direction (e.g., `up`, `down`, `left`, `right`).
+ * @param {number} $size - Size of the triangle in pixels.
+ * @param {color} $color - Triangle color (default: `currentColor`).
+ *
+ * @throws Error if an invalid direction is provided.
+ */
+@mixin triangle($direction, $size, $color: currentColor) {
+    width: 0;
+    height: 0;
+
+    @if 'up' == $direction {
+        border-left: px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: px-to-rem($size) solid $color;
+    } @else if 'right' == $direction {
+        border-top: px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: px-to-rem(math.div($size, 2)) solid transparent;
+        border-left: px-to-rem($size) solid $color;
+    } @else if 'down' == $direction {
+        border-left: px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: px-to-rem(math.div($size, 2)) solid transparent;
+        border-top: px-to-rem($size) solid $color;
+    } @else if 'left' == $direction {
+        border-top: px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: px-to-rem($size) solid $color;
+    } @else if 'top-right' == $direction {
+        border-bottom: px-to-rem($size) solid $color;
+        border-left: px-to-rem($size) solid transparent;
+    } @else if 'bottom-right' == $direction {
+        border-top: px-to-rem($size) solid $color;
+        border-left: px-to-rem($size) solid transparent;
+    } @else if 'bottom-left' == $direction {
+        border-top: px-to-rem($size) solid $color;
+        border-right: px-to-rem($size) solid transparent;
+    } @else if 'top-left' == $direction {
+        border-bottom: px-to-rem($size) solid $color;
+        border-right: px-to-rem($size) solid transparent;
+    } @else {
+        @error "Invalid direction `#{$direction}`. Valid directions are: up, right, down, left, top-right, bottom-right, bottom-left, top-left.";
+    }
+}
+
+/**
+ * Creates a flexbox layout.
+ *
+ * @param {string} $direction - Flex direction (e.g., `row`, `column`).
+ * @param {string} $justify - Justification (e.g., `flex-start`, `center`).
+ * @param {string} $align - Alignment (e.g., `stretch`, `center`).
+ * @param {string} $wrap - Wrapping behavior (`nowrap`, `wrap`).
+ */
+@mixin flexbox(
+    $direction: row,
+    $justify: flex-start,
+    $align: stretch,
+    $wrap: nowrap
+) {
+    display: flex;
+    justify-content: $justify;
+    align-items: $align;
+    flex-flow: $direction $wrap;
+}
+
+/**
+ * Creates a grid container.
+ *
+ * @param {number} $columns - Number of grid columns.
+ * @param {number|string} $gap - Gap between grid items.
+ */
+@mixin grid-container($columns: 12, $gap: 0) {
+    display: grid;
+    grid-template-columns: repeat($columns, 1fr);
+    gap: $gap;
+}
+
+/**
+ * Creates a responsive grid layout.
+ *
+ * @param {number} $columns - Number of columns (default: `$default-grid-columns`).
+ * @param {string|number} $gap - Gap size (default: small spacing).
+ */
+@mixin grid($columns: $default-grid-columns, $gap: get-spacing('sm')) {
+    display: grid;
+    grid-template-columns: repeat($columns, 1fr);
+    grid-template-rows: auto;
+    gap: px-to-rem($gap);
+}
+
+/**
+ * Adds padding to an element.
+ *
+ * @param {map} $spacings - Map of spacing values for top, right, bottom, and left.
+ */
+@mixin padding($spacings) {
+    $top: map.get($spacings, top, 0);
+    $right: map.get($spacings, right, 0);
+    $bottom: map.get($spacings, bottom, $top);
+    $left: map.get($spacings, left, $right);
+
+    padding: px-to-rem($top $right $bottom $left);
+}
+
+/**
+ * Generates a theme for a given primary color and theme name, including variations for color vision deficiencies.
+ *
+ * @param {color} $primary - The primary color for the theme (e.g., #3498db).
+ * @param {string} $theme-name - The name of the theme (e.g., "dark-mode").
+ */
+@mixin theme($primary, $theme-name) {
+    @each $value in ('', 'protanopia', 'deuteranopia', 'tritanopia') {
+        @include generate-theme($primary, $theme-name, $value);
+    }
+}
+
+/**
+ * Generates a theme with color adjustments based on a specific vision deficiency and applies CSS variables.
+ * This includes handling the color adjustment process until a valid color is found.
+ *
+ * @param {color} $primary - The base primary color to be adjusted (e.g., #3498db).
+ * @param {string} $theme-name - The name of the theme (e.g., "dark-mode").
+ * @param {string} [$deficiency=''] - The vision deficiency type ('', 'protanopia', 'deuteranopia', 'tritanopia').
+ */
+@mixin generate-theme($primary, $theme-name, $deficiency: '') {
+    // Initial adjustment based on deficiency
+    @if 'protanopia' == $deficiency {
+        $theme-name: #{$theme-name}-#{$deficiency};
+        $adjusted-primary: adjust-for-deficiency(
+            color.adjust($primary, $hue: -40deg),
+            $deficiency
+        );
+    } @else if 'deuteranopia' == $deficiency {
+        $theme-name: #{$theme-name}-#{$deficiency};
+        $adjusted-primary: adjust-for-deficiency(
+            color.adjust($primary, $hue: -30deg),
+            $deficiency
+        );
+    } @else if 'tritanopia' == $deficiency {
+        $theme-name: #{$theme-name}-#{$deficiency};
+        $adjusted-primary: adjust-for-deficiency(
+            color.adjust($primary, $hue: 30deg),
+            $deficiency
+        );
+    } @else {
+        $adjusted-primary: $primary;
+    }
+
+    $complementary: color.adjust($adjusted-primary, $hue: 180deg);
+    $analogous-1: color.adjust($adjusted-primary, $hue: -30deg);
+    $analogous-2: color.adjust($adjusted-primary, $hue: 30deg);
+    $triadic-1: color.adjust($adjusted-primary, $hue: 120deg);
+    $triadic-2: color.adjust($adjusted-primary, $hue: -120deg);
+    $accent: color.adjust($adjusted-primary, $hue: 60deg);
+    $neutral-light: color.mix($adjusted-primary, #fff, 80%);
+    $neutral-dark: color.mix($adjusted-primary, #000, 80%);
+    $text-color: color.mix(#000, $adjusted-primary, 20%);
+    $bg-color: color.mix(#fff, $adjusted-primary, 10%);
+    $border-color: color.mix(#000, $adjusted-primary, 50%);
+    $primary-hover: color.adjust($adjusted-primary, $lightness: 10%);
+    $primary-focus: color.adjust($adjusted-primary, $lightness: -10%);
+    $primary-active: color.adjust($adjusted-primary, $lightness: -15%);
+    $primary-disabled: color.adjust($adjusted-primary, $lightness: 30%);
+    $success-color: color.mix($adjusted-primary, #0f0, 50%);
+    $warning-color: color.mix($adjusted-primary, #f90, 50%);
+    $error-color: color.mix($adjusted-primary, #f00, 50%);
+    $info-color: color.mix($adjusted-primary, #39f, 50%);
+    $shadow-light: rgb(0 0 0 / 10%);
+    $shadow-dark: rgb(0 0 0 / 50%);
+    $gradient-primary: linear-gradient(
+        45deg,
+        $adjusted-primary,
+        color.adjust($adjusted-primary, $lightness: 30%)
+    );
+    $gradient-accent: linear-gradient(
+        45deg,
+        color.adjust($adjusted-primary, $lightness: 10%),
+        $adjusted-primary
+    );
+    $opacity-light: 0.2;
+    $opacity-dark: 0.5;
+
+    [data-theme='#{$theme-name}'] {
+        :root {
+            --primary-color: #{$adjusted-primary};
+            --complementary: #{$complementary};
+            --analogous-1: #{$analogous-1};
+            --analogous-2: #{$analogous-2};
+            --triadic-1: #{$triadic-1};
+            --triadic-2: #{$triadic-2};
+            --accent: #{$accent};
+            --neutral-light: #{$neutral-light};
+            --neutral-dark: #{$neutral-dark};
+            --text-color: #{$text-color};
+            --bg-color: #{$bg-color};
+            --border-color: #{$border-color};
+            --success-color: #{$success-color};
+            --warning-color: #{$warning-color};
+            --error-color: #{$error-color};
+            --info-color: #{$info-color};
+            --shadow-light: #{$shadow-light};
+            --shadow-dark: #{$shadow-dark};
+            --gradient-primary: #{$gradient-primary};
+            --gradient-accent: #{$gradient-accent};
+            --opacity-light: #{$opacity-light};
+            --opacity-dark: #{$opacity-dark};
+            --primary-hover: #{$primary-hover};
+            --primary-focus: #{$primary-focus};
+            --primary-active: #{$primary-active};
+            --primary-disabled: #{$primary-disabled};
+        }
+    }
+}

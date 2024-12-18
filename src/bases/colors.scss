@@ -1,0 +1,178 @@
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:meta';
+@use '../index';
+
+// Global flags to determine the color scheme being used.
+$black-colors: false !default;
+$light-colors: false !default;
+$material-colors: false !default;
+
+// Option to extend or override the default colors.
+$custom-colors: () !default;
+
+// Definition of the black color scheme with all its shades and variations.
+$black: (
+    // Mint green
+    primary-color: #1abc9c,
+    // Intense pink
+    complementary: #c91a6e,
+    // Cyan
+    analogous-1: #1abcc9,
+    // Chartreuse green
+    analogous-2: #9cc91a,
+    // Dark pink
+    triadic-1: #bc1a9c,
+    // Deep red
+    triadic-2: #c91a1a,
+    // Golden orange
+    accent: #f39c12,
+    // Bluish gray
+    neutral-light: #2c3e50,
+    // Deep black
+    neutral-dark: #1a252f,
+    // Off-white
+    text-color: #ecf0f1,
+    // Pure black
+    bg-color: #121212,
+    // Slate gray
+    border-color: #34495e,
+    // Success green
+    success-color: #27ae60,
+    // Golden yellow
+    warning-color: #f39c12,
+    // Error red
+    error-color: #e74c3c,
+    // Info blue
+    info-color: #3498db,
+    // Light shadow
+    shadow-light: color-alpha(#fff, 0.1),
+    // Deep shadow
+    shadow-dark: color-alpha(#000, 0.6),
+    // Mint green gradient
+    gradient-primary: linear-gradient(45deg, #1abc9c, #48e1c1),
+    // Orange gradient
+    gradient-accent: linear-gradient(45deg, #f39c12, #f3c96a),
+    // Light opacity value
+    opacity-light: 0.2,
+    // Dark opacity value
+    opacity-dark: 0.8,
+    // Lighter mint green
+    primary-hover: #1ad1a9,
+    // Slightly darker mint green
+    primary-focus: #17a085,
+    // Dark mint green
+    primary-active: #128f74,
+    // Disabled mint green
+    primary-disabled: #85dccb,
+);
+
+// Definition of the light color scheme with all its shades and variations.
+$light: (
+    // Light blue
+    primary-color: #4a90e2,
+    // Soft red
+    complementary: #e24a4a,
+    // Light green
+    analogous-1: #4ae290,
+    // Light blue
+    analogous-2: #4a90e2,
+    // Light orange
+    triadic-1: #e2b94a,
+    // Purple
+    triadic-2: #944ae2,
+    // Soft orange
+    accent: #e2a44a,
+    // Off-white
+    neutral-light: #f5f5f5,
+    // Light gray
+    neutral-dark: #dcdcdc,
+    // Grayish black
+    text-color: #333,
+    // White
+    bg-color: #fff,
+    // Light gray
+    border-color: #ddd,
+    // Success green
+    success-color: #27ae60,
+    // Golden yellow
+    warning-color: #f39c12,
+    // Error red
+    error-color: #e74c3c,
+    // Info blue
+    info-color: #3498db,
+    // Light shadow
+    shadow-light: color-alpha(#000, 0.1),
+    // Medium shadow
+    shadow-dark: color-alpha(#000, 0.3),
+    // Blue gradient
+    gradient-primary: linear-gradient(45deg, #4a90e2, #a2c8f2),
+    // Orange gradient
+    gradient-accent: linear-gradient(45deg, #e2a44a, #f2c87a),
+    // Light opacity value
+    opacity-light: 0.2,
+    // Dark opacity value
+    opacity-dark: 0.6,
+    // Slightly lighter blue
+    primary-hover: #5aa3f2,
+    // Slightly darker blue
+    primary-focus: #3976c2,
+    // Darker blue
+    primary-active: #2d5e9e,
+    // Disabled blue
+    primary-disabled: #b3d3f2,
+);
+
+// Variable to store the final merged color scheme based on user options.
+$final-colors: ();
+
+// Merge the black color scheme with custom overrides if $black-colors is enabled.
+@if $black-colors {
+    $final-colors: map.merge($black, $custom-colors);
+}
+
+// Merge the light color scheme with custom overrides if $light-colors is enabled.
+@else if $light-colors {
+    $final-colors: map.merge($light, $custom-colors);
+}
+
+// Use only custom colors if provided as a map.
+@else if 'map' == meta.type-of($custom-colors) {
+    $final-colors: $custom-colors;
+}
+
+// Generate CSS variables from the final color scheme if provided as a map.
+@if 'map' == meta.type-of($final-colors) {
+    :root {
+        @each $key, $hexa in $final-colors {
+            --#{$key}: $hexa;
+            --#{$key}-rgb: color-rgb(
+                $hexa,
+                false
+            );
+        }
+    }
+}
+
+// Generate additional CSS variables for Material colors if enabled.
+@if $material-colors {
+    :root {
+        @each $key-color, $map-color in $colors {
+            @each $key, $hexa in $map-color {
+                @if 'default' == $key {
+                    --#{$key-color}: $hexa;
+                    --#{$key-color}-rgb: color-rgb(
+                        $hexa,
+                        false
+                    );
+                }
+
+                --#{$key-color}-#{$key}: $hexa;
+                --#{$key-color}-#{$key}-rgb: color-rgb(
+                    $hexa,
+                    false
+                );
+            }
+        }
+    }
+}
