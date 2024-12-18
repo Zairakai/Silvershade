@@ -2,7 +2,6 @@
 @use 'functions';
 @use 'mixins';
 
-// Classe de base pour une grille
 %grid {
     @include grid;
 
