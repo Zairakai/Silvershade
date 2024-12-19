@@ -1,6 +1,6 @@
 {
     "name": "@zairakai/silvershade",
-    "version": "1.0.0",
+    "version": "1.4.0",
     "description": "Silvershade is a modular SCSS framework for building mobile-first, responsive layouts with a clean grid system and consistent spacing utilities.",
     "keywords": [
         "css",

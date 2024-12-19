@@ -1,26 +1,20 @@
 @use 'sass:map';
 
-/**
- * --------------------------------------------
- * File : _variables.scss
- * Description : Global variables (colors, spacings, typography, breakpoints).
- * --------------------------------------------
- */
+/// --------------------------------------------
+/// File : _variables.scss
+/// Description : Global variables (colors, spacings, typography, breakpoints).
+/// --------------------------------------------
 
-/**
- * ========================
- * Breakpoints
- * ========================
- */
+/// ========================
+/// Breakpoints
+/// ========================
 
-/**
- * Defines breakpoints for portrait and landscape orientations.
- * These breakpoints are used to manage responsive layouts across devices.
- *
- * The breakpoints are defined for both orientations (landscape and portrait) and consist of:
- * - small, medium, large, etc. for various screen sizes
- * - min-width and max-width in `px` converted to `rem` using the `px-to-rem` function.
- */
+/// Defines breakpoints for portrait and landscape orientations.
+/// These breakpoints are used to manage responsive layouts across devices.
+///
+/// The breakpoints are defined for both orientations (landscape and portrait) and consist of:
+/// - small, medium, large, etc. for various screen sizes
+/// - min-width and max-width in `px` converted to `rem` using the `px-to-rem` function.
 $breakpoints: (
     landscape: (
         small: (
@@ -84,18 +78,14 @@ $breakpoints: (
     ),
 ) !default;
 
-/**
- * ========================
- * Container
- * ========================
- */
+/// ========================
+/// Container
+/// ========================
 
-/**
- * Maximum widths for containers based on portrait and landscape orientations.
- * Used to control adaptive sizes of main containers.
- *
- * Each breakpoint contains a max-width value in `rem` to maintain flexibility across devices.
- */
+/// Maximum widths for containers based on portrait and landscape orientations.
+/// Used to control adaptive sizes of main containers.
+///
+/// Each breakpoint contains a max-width value in `rem` to maintain flexibility across devices.
 $containers: (
     landscape: (
         small: 667px,
@@ -115,29 +105,23 @@ $containers: (
         desktop: 1440px,
         wide-screen: 1920px,
     ),
-);
+) !default;
 
-/**
- * ========================
- * Grids
- * ========================
- */
+/// ========================
+/// Grids
+/// ========================
 
-/**
- * Default grid
- *
- * Defines the default number of columns for the grid system. A 12-column grid is commonly used in responsive design.
- */
+/// Default grid
+///
+/// Defines the default number of columns for the grid system. A 12-column grid is commonly used in responsive design.
 $default-grid-columns: 1 !default;
 
-/**
- * CSS grid configuration for each breakpoint.
- * Defines the number of columns and gutter sizes based on orientations and screen sizes.
- *
- * Each breakpoint contains:
- * - number of columns (e.g., 2, 3, 4, etc.)
- * - gutter size (spacing between columns) in `rem` units
- */
+/// CSS grid configuration for each breakpoint.
+/// Defines the number of columns and gutter sizes based on orientations and screen sizes.
+///
+/// Each breakpoint contains:
+/// - number of columns (e.g., 2, 3, 4, etc.)
+/// - gutter size (spacing between columns) in `rem` units
 $grids: (
     landscape: (
         small: (
@@ -199,21 +183,17 @@ $grids: (
             gutter: 32px,
         ),
     ),
-);
+) !default;
 
-/**
- * ========================
- * Spacings
- * ========================
- */
+/// ========================
+/// Spacings
+/// ========================
 
-/**
- * Defines common spacing values used throughout the design.
- * These are typically applied for margins, paddings, gaps, and other spacing needs.
- *
- * Values are stored as `rem` for consistent spacing across devices.
- * The spacing values range from `0px` to larger values like `48px`.
- */
+/// Defines common spacing values used throughout the design.
+/// These are typically applied for margins, paddings, gaps, and other spacing needs.
+///
+/// Values are stored as `rem` for consistent spacing across devices.
+/// The spacing values range from `0px` to larger values like `48px`.
 $spacings: (
     0: 0px,
     none: 0px,
@@ -236,51 +216,41 @@ $spacings: (
     xl: 48px,
 ) !default;
 
-/**
- * ========================
- * Typography
- * ========================
- */
+/// ========================
+/// Typography
+/// ========================
 
-/**
- * Default font-size
- *
- * Defines the default font-size.
- */
-$default-font-size: 16 !default;
+/// Default font-size
+///
+/// Defines the default font-size.
+$default-font-size: 16px !default;
 
-/**
- * Font family map
- * ========================
- * Defines the font families used throughout the design for consistency.
- * - `sans`: Sans-serif fonts
- * - `mono`: Monospaced fonts
- */
+/// Font family map
+/// ========================
+/// Defines the font families used throughout the design for consistency.
+/// - `sans`: Sans-serif fonts
+/// - `mono`: Monospaced fonts
 $font-family: (
     sans: "'Helvetica Neue', arial, sans-serif,",
     mono: "'Courier New', monospace,",
 ) !default;
 
-/**
- * Font weight map
- * ========================
- * Defines the font weights for different text elements.
- * - light: 300
- * - base: 400
- * - bold: 700
- */
+/// Font weight map
+/// ========================
+/// Defines the font weights for different text elements.
+/// - light: 300
+/// - base: 400
+/// - bold: 700
 $font-weight: (
     light: 300,
     base: 400,
     bold: 700,
 ) !default;
 
-/**
- * Font size map
- * ========================
- * Defines the font sizes for various text elements in `rem` units.
- * The base font size is `16px`, and other sizes are defined relative to it.
- */
+/// Font size map
+/// ========================
+/// Defines the font sizes for various text elements in `rem` units.
+/// The base font size is `16px`, and other sizes are defined relative to it.
 $font-size: (
     14: 14px,
     base: 16px,
@@ -307,12 +277,10 @@ $font-size: (
     58: 58px,
 ) !default;
 
-/**
- * Fluid typography
- * ========================
- * Defines the font size that adapts fluidly to the screen size, enabling a scalable design across devices.
- * Uses a `min()` and `max()` function to determine the font size based on the screen's width.
- */
+/// Fluid typography
+/// ========================
+/// Defines the font size that adapts fluidly to the screen size, enabling a scalable design across devices.
+/// Uses a `min()` and `max()` function to determine the font size based on the screen's width.
 $font-size-fluid: (
     sm: (
         min: map.get($font-size, 14),
@@ -371,11 +339,9 @@ $font-size-fluid: (
     ),
 ) !default;
 
-/**
- * Line Heights
- * ========================
- * Defines line heights for various text elements. These are used to ensure appropriate vertical spacing between lines of text.
- */
+/// Line Heights
+/// ========================
+/// Defines line heights for various text elements. These are used to ensure appropriate vertical spacing between lines of text.
 $line-height: (
     base: 1.2,
     3: 1.3,
@@ -384,12 +350,10 @@ $line-height: (
     6: 1.6,
 ) !default;
 
-/**
- * Headings Styles
- * ========================
- * Map defining styles for each heading level (h1 to h6).
- * Includes margins, paddings, line height, font size, weight, and letter spacing.
- */
+/// Headings Styles
+/// ========================
+/// Map defining styles for each heading level (h1 to h6).
+/// Includes margins, paddings, line height, font size, weight, and letter spacing.
 $headings: (
     1: (
         line-height: map.get($line-height, base),
@@ -455,8 +419,7 @@ $headings: (
         line-height: map.get($line-height, 6),
         margin: 0px 0px 6px 0px,
         padding: 0px,
-        0
-            size: calculate-fluid-font(
+        size: calculate-fluid-font(
                 map.get(map.get($font-size-fluid, h6), min),
                 map.get(map.get($font-size-fluid, h6), fluid),
                 map.get(map.get($font-size-fluid, h6), max)
@@ -466,13 +429,11 @@ $headings: (
     ),
 ) !default;
 
-/**
- * ========================
- * Shapes
- * ========================
- * Defines border radius for different elements to control their rounded corners.
- * Can be defined in pixels or percentage for circular elements.
- */
+/// ========================
+/// Shapes
+/// ========================
+/// Defines border radius for different elements to control their rounded corners.
+/// Can be defined in pixels or percentage for circular elements.
 $shape-radius: (
     0: 0px,
     1: 4px,
@@ -481,15 +442,13 @@ $shape-radius: (
     4: 16px,
     5: 22px,
     6: 50%,
-);
+) !default;
 
-/**
- * ========================
- * Elevations
- * ========================
- * Defines different shadow elevations for various UI components.
- * The `alpha` values control the transparency, and `size` defines the spread and blur of the shadow.
- */
+/// ========================
+/// Elevations
+/// ========================
+/// Defines different shadow elevations for various UI components.
+/// The `alpha` values control the transparency, and `size` defines the spread and blur of the shadow.
 $elevations: (
     0: (
         1: (
@@ -577,12 +536,10 @@ $elevations: (
     ),
 ) !default;
 
-/**
- * ========================
- * Colors
- * ========================
- * Maps or colors with declination, from the material design.
- */
+/// ========================
+/// Colors
+/// ========================
+/// Maps or colors with declination, from the material design.
 $colors: (
     red: (
         lighten-5: #ffebee,
