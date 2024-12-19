@@ -3,73 +3,82 @@
 @use 'sass:map';
 @use 'sass:math';
 @use 'sass:meta';
-@use 'variables';
+@use 'sass:string';
+@use 'variables' as SylverShadeVariables;
 
-/**
- * Removes the unit from a numeric value.
- *
- * @param {number} $value - The value to process.
- * @return {number} - The unitless value.
- */
+////////////////////////////////////////////////////////////////////////////////
+// FILE DOCUMENTATION
+// This file contains various utility functions for handling units, color,
+// spacing, grid, elevations, and other visual properties in the project.
+// Functions include unit conversions, rem calculations, symmetry adjustments,
+// color adjustments for readability, and error handling for missing map keys.
+////////////////////////////////////////////////////////////////////////////////
+
+/// Removes the unit from a numeric value.
+///
+/// @param {number} $value - The value to process.
+/// @return {number} - The unitless value.
 @function strip-unit($value) {
-    @if math.is-unitless($value) {
-        @return $value;
+    @if 'number' == meta.type-of($value) and not math.is-unitless($value) {
+        $tmp: $value / ($value * 0 + 1);
+
+        @return $tmp;
     }
 
-    // Divide by 1 with the same unit to remove the unit
-    @return math.div($value, 1#{math.unit($value)});
+    @return $value;
 }
 
-/**
- * Converts a single pixel value to rem units.
- *
- * @param {number|string} $value - The pixel value to convert.
- * @param {number} $base-font-size - The base font size used for conversion.
- * @param {boolean} $force-zero-rem (optional, default: false) - If true, outputs `0rem` for zero values.
- *
- * @return {number} - The rem value.
- *
- * @throws Error if the input value is not a number or convertible.
- */
+/// Converts a single pixel value to rem units with unit validation.
+///
+/// @param {number|string} $value - The pixel value to convert.
+/// @param {number} $base-font-size - The base font size used for conversion.
+/// @param {boolean} $force-zero-rem (optional, default: false) - If true, outputs `0rem` for zero values.
+/// @return {number|string} - The rem value or the original value if invalid.
 @function calc-rem($value, $base-font-size, $force-zero-rem: false) {
-    // Ensure the value is unitless before performing operations
-    $value: strip-unit($value);
-
-    // Validate the processed value is numeric
-    @if 'number' != meta.type-of($value) {
-        @error "The value `#{$value}` must be a valid number.";
-    }
-
-    // Handle zero values
     @if 0 == $value {
         // stylelint-disable-next-line length-zero-no-unit
         @return if($force-zero-rem, 0rem, 0);
     }
 
-    // Perform the conversion to rem
+    @if 'string' == meta.type-of($value) and 'rem' == string.slice($value, -3) {
+        @return $value;
+    } @else if 'number' != meta.type-of($value) {
+        @warn "calc-rem expects a numeric value (e.g., `16px`, `1rem`, or `16`). Received `#{$value}`. Returning the value as-is.";
+        @return $value;
+    }
+
+    // Validate the unit of the value
+    $unit: math.unit($value);
+
+    @if 'px' != $unit and '' != $unit {
+        @warn "calc-rem expects a pixel value (e.g., `16px`, `1rem`, or `16`) or a unitless number. Received `#{$value}` with unit `#{$unit}`. Returning the value as-is.";
+        @return $value;
+    }
+
+    $value: strip-unit($value);
+    $base-font-size: strip-unit($base-font-size);
     $result: math.div($value, $base-font-size);
 
     @return $result + rem;
 }
 
-/**
- * Converts one or multiple pixel values to rem units.
- *
- * @param {number|list<number>} $px - The pixel value(s) to convert.
- * @param {map|null} $options (optional) - A map of options:
- *    - 'base-font-size': {number} The base font size for rem conversion (default: $default-font-size).
- *    - 'force-zero-rem': {boolean} Whether to force `0` values to output as `0rem` (default: false).
- *
- * @return {number|list<number>} - The rem value(s).
- *
- * @throws Error if the input is not a number or list of numbers.
- */
-@function px-to-rem($px, $options: null) {
-    $base-font-size: map.get($options, 'base-font-size', $default-font-size);
-    $force-rem-zero: map.get($options, 'force-zero-rem', false);
+/// Converts one or multiple pixel values to rem units.
+///
+/// @param {number|list<number>} $px - The pixel value(s) to convert.
+/// @param {map|null} $options (optional) - A map of options:
+///    - 'base-font-size': {number} The base font size for rem conversion (default: $default-font-size).
+///    - 'force-zero-rem': {boolean} Whether to force `0` values to output as `0rem` (default: false).
+/// @return {number|string|list<number|string>} - The rem value(s).
+/// @throws Error if the input is not a number or list of numbers.
+@function px-to-rem($px, $options: ()) {
+    $base-font-size: if(
+        map.has-key($options, 'base-font-size'),
+        map.get($options, 'base-font-size'),
+        SylverShadeVariables.$default-font-size
+    );
+    $force-rem-zero: if(map.has-key($options, 'force-zero-rem'), map.get($options, 'force-zero-rem'), false);
 
     @if 'list' == meta.type-of($px) {
-        // Process each value in the list and convert to rem
         $rem-list: ();
 
         @each $value in $px {
@@ -79,21 +88,19 @@
 
         @return $rem-list;
     } @else {
-        // Process a single value
         @return calc-rem($px, $base-font-size, $force-rem-zero);
     }
 }
 
-/**
- * Applies symmetry to corner values in a map.
- *
- * @param {map} $corners - A map of corner values (e.g., 'top-left', 'bottom-right').
- * @param {string} $symmetry - The type of symmetry to apply ('horizontal', 'vertical', 'diagonal').
- *
- * @return {map} - A new map with symmetrical corner values.
- *
- * @throws Error if the specified symmetry type is invalid.
- */
+/// Applies symmetry to corner values in a map.
+/// This function allows you to apply symmetry to corner values in a map.
+/// Depending on the selected symmetry type ('horizontal', 'vertical', or 'diagonal'),
+/// the function will mirror corner values across the designated axis.
+///
+/// @param {map} $corners - A map of corner values (e.g., 'top-left', 'bottom-right').
+/// @param {string} $symmetry - The type of symmetry to apply ('horizontal', 'vertical', 'diagonal').
+/// @return {map} - A new map with symmetrical corner values.
+/// @throws Error if the specified symmetry type is invalid.
 @function corners-cut-symmetry($corners, $symmetry) {
     $corner-mapping: (
         'horizontal': (
@@ -123,33 +130,28 @@
     @each $corner in map.get($corner-mapping, $symmetry) {
         $first-corner: list.nth($corner, 1);
         $second-corner: list.nth($corner, 2);
-        $corners: map.set(
-            $corners,
-            $second-corner,
-            map.get($corners, $first-corner)
-        );
+        $corners: map.set($corners, $second-corner, map.get($corners, $first-corner));
     }
 
     @return $corners;
 }
 
-/**
- * Retrieves a value from the elevation map.
- *
- * @param {string} $level - The elevation level (e.g., 'low', 'medium').
- * @param {string} $key - The specific shadow key (e.g., 'box-shadow').
- * @param {string} $property - The property to retrieve (e.g., 'offset-x').
- *
- * @return {any} - The value associated with the specified property.
- *
- * @throws Error if the level, key, or property does not exist.
- */
+/// Retrieves a value from the elevation map.
+/// This function allows you to retrieve a specific property from a map that holds
+/// elevation levels (e.g., 'low', 'medium'). You can retrieve properties such as
+/// `box-shadow`, `offset-x`, etc., based on the provided level, key, and property.
+///
+/// @param {string} $level - The elevation level (e.g., 'low', 'medium').
+/// @param {string} $key - The specific shadow key (e.g., 'box-shadow').
+/// @param {string} $property - The property to retrieve (e.g., 'offset-x').
+/// @return {any} - The value associated with the specified property.
+/// @throws Error if the level, key, or property does not exist.
 @function get-elevation-value($level, $key, $property) {
-    @if not map.has-key($elevations, $level) {
+    @if not map.has-key(SylverShadeVariables.$elevations, $level) {
         @error "Level '#{$level}' does not exist in \$boxShadows.";
     }
 
-    $level-map: map.get($elevations, $level);
+    $level-map: map.get(SylverShadeVariables.$elevations, $level);
 
     @if not map.has-key($level-map, $key) {
         @error "Key '#{$key}' does not exist at level '#{$level}'.";
@@ -168,15 +170,16 @@
     @return map.get($key-map, $property);
 }
 
-/**
- * Determines the most readable color based on background lightness.
- *
- * @param {color} $background - The background color to evaluate.
- * @param {color} $colorDark - The dark color to use for light backgrounds.
- * @param {color} $colorLight - The light color to use for dark backgrounds.
- *
- * @return {color} - The chosen color (dark or light) for better readability.
- */
+/// Determines the most readable color based on background lightness.
+/// This function helps determine whether to use a dark or light text color
+/// based on the lightness of the provided background color. The goal is to
+/// ensure better readability and contrast for text displayed over different
+/// background colors.
+///
+/// @param {color} $background - The background color to evaluate.
+/// @param {color} $colorDark - The dark color to use for light backgrounds.
+/// @param {color} $colorLight - The light color to use for dark backgrounds.
+/// @return {color} - The chosen color (dark or light) for better readability.
 @function color-lisibility($background, $colorDark, $colorLight) {
     @if 50 < color.lightness($background) {
         @return $colorDark;
@@ -185,22 +188,21 @@
     }
 }
 
-/**
- * Retrieves a container value from the map.
- *
- * @param {string} $key - The container key.
- * @param {string} $orientation - The orientation to use.
- *
- * @return {Number} - The value of the requested container key.
- *
- * @throws Error if the container key is not found.
- */
+/// Retrieves a container value from the map.
+/// This function retrieves a specific container value based on the provided
+/// key and orientation (e.g., 'landscape' or 'portrait'). It returns the
+/// value for the requested container after performing validation checks.
+///
+/// @param {string} $key - The container key.
+/// @param {string} $orientation - The orientation to use ('landscape' or 'portrait').
+/// @return {Number} - The value of the requested container key.
+/// @throws Error if the container key is not found.
 @function get-container($key, $orientation) {
     @if 'landscape' != $orientation or 'portrait' != $orientation {
         @error "Orientation '#{$orientation}' not available, use 'landscape' or 'portrait'.";
     }
 
-    $container: map.get($containers, $orientation);
+    $container: map.get(SylverShadeVariables.$containers, $orientation);
 
     @if not map.has-key($container, $key) {
         @error "Container '#{$key}' not found for orientation '#{$orientation}'.";
@@ -209,23 +211,22 @@
     @return px-to-rem(map.get($container, $key));
 }
 
-/**
- * Retrieves a grid property value from the map.
- *
- * @param {string} $key - The grid key (e.g., 'columns', 'gutters').
- * @param {string} $property - The specific property to retrieve.
- * @param {string} $orientation - The orientation to use.
- *
- * @return {any} - The value of the requested grid property.
- *
- * @throws Error if the grid key or property is not found.
- */
+/// Retrieves a grid property value from the map.
+/// This function retrieves a grid property (e.g., 'columns', 'gutters') for
+/// a specific orientation (e.g., 'landscape' or 'portrait'). It performs
+/// checks to ensure that the grid key and property exist.
+///
+/// @param {string} $key - The grid key (e.g., 'columns', 'gutters').
+/// @param {string} $property - The specific property to retrieve (e.g., 'offset-x').
+/// @param {string} $orientation - The orientation to use ('landscape' or 'portrait').
+/// @return {any} - The value of the requested grid property.
+/// @throws Error if the grid key or property is not found.
 @function get-grid($key, $property, $orientation) {
     @if 'landscape' != $orientation or 'portrait' != $orientation {
         @error "Orientation '#{$orientation}' not available, use 'landscape' or 'portrait'.";
     }
 
-    $grid: map.get($grids, $orientation);
+    $grid: map.get(SylverShadeVariables.$grids, $orientation);
 
     @if not map.has-key($grid, $key) {
         @error "Grid '#{$key}' not found for orientation '#{$orientation}'.";
@@ -244,22 +245,21 @@
     @return map.get($grid, $property);
 }
 
-/**
- * Retrieves a heading property value from the map.
- *
- * @param {string} $level - The heading level (e.g., 'h1', 'h2').
- * @param {string} $property - The property to retrieve (e.g., 'font-size').
- *
- * @return {any} - The value of the requested heading property.
- *
- * @throws Error if the heading level or property is not found.
- */
+/// Retrieves a heading property value from the map.
+/// This function retrieves a specific heading property (e.g., 'font-size')
+/// based on the heading level (e.g., 'h1', 'h2'). It ensures that both
+/// the heading level and property exist in the map before returning the value.
+///
+/// @param {string} $level - The heading level (e.g., 'h1', 'h2').
+/// @param {string} $property - The property to retrieve (e.g., 'font-size').
+/// @return {any} - The value of the requested heading property.
+/// @throws Error if the heading level or property is not found.
 @function get-heading($level, $property) {
-    @if not map.has-key($headings, $level) {
+    @if not map.has-key(SylverShadeVariables.$headings, $level) {
         @error "Heading level '#{$level}' not found.";
     }
 
-    $heading: map.get($headings, $level);
+    $heading: map.get(SylverShadeVariables.$headings, $level);
 
     @if not map.has-key($heading, $property) {
         @error "Property '#{$property}' of heading level '#{$level}' not found.";
@@ -272,33 +272,56 @@
     @return map.get($heading, $property);
 }
 
-/**
- * Retrieves a spacing value from the map and converts it to rem.
- *
- * @param {string} $key - The spacing key (e.g., 'small', 'medium').
- *
- * @return {number} - The rem value of the spacing.
- *
- * @throws Error if the spacing key is not found.
- */
-@function get-spacing($key) {
-    @if not map.has-key($spacings, $key) {
+/// Retrieves a spacing value from the map and converts it to rem.
+/// This function retrieves a spacing value based on the provided key (e.g.,
+/// 'small', 'medium') and converts it to rem if necessary. It provides
+/// flexibility by allowing an option to return the value in pixels.
+///
+/// @param {string} $key - The spacing key (e.g., 'small', 'medium').
+/// @param {boolean} $as-px - Optional flag to return value in pixels (defaults to false).
+/// @return {number} - The rem value of the spacing.
+/// @throws Error if the spacing key is not found.
+@function get-spacing($key, $as-px: false) {
+    @if not map.has-key(SylverShadeVariables.$spacings, $key) {
         @error "Spacing key '#{$key}' not found.";
     }
 
-    @return px-to-rem(map.get($spacings, $key));
+    $value: map.get(SylverShadeVariables.$spacings, $key);
+
+    @if $as-px {
+        @return $value;
+    }
+
+    @return px-to-rem($value);
 }
 
-/**
- * Retrieves a nested value from a map using a list of keys.
- *
- * @param {map} $map - The map to search in.
- * @param {list<string>} $keys - The list of keys to traverse.
- *
- * @return {any} - The value at the nested map location.
- *
- * @throws Error if any of the keys is not found in the map.
- */
+/// Retrieves a line-height value from the map.
+/// This function retrieves a line-height value based on the provided key
+/// (e.g., 'small', 'medium'). It does not require conversion to rem, as
+/// the map stores values already in rem units.
+///
+/// @param {string} $key - The line-height key (e.g., 'small', 'medium').
+/// @return {number} - The line-height value.
+/// @throws Error if the line-height key is not found.
+@function get-line-height($key) {
+    @if not map.has-key(SylverShadeVariables.$line-height, $key) {
+        @error "Line-height key '#{$key}' not found.";
+    }
+
+    $value: map.get(SylverShadeVariables.$line-height, $key);
+
+    @return $value;
+}
+
+/// Retrieves a nested value from a map using a list of keys.
+/// This function allows you to traverse through a nested map using a list
+/// of keys. It validates the existence of each key and returns the final value
+/// found at the specified location.
+///
+/// @param {map} $map - The map to search in.
+/// @param {list<string>} $keys - The list of keys to traverse.
+/// @return {any} - The value at the nested map location.
+/// @throws Error if any of the keys is not found in the map.
 @function get-value-from-map($map, $keys...) {
     $current: $map;
 
@@ -313,111 +336,94 @@
     @return $current;
 }
 
-/**
- * Calculates the aspect ratio as a percentage.
- *
- * @param {number} $width - The width value.
- * @param {number} $height - The height value.
- *
- * @return {percentage} - The aspect ratio as a percentage.
- */
+/// Calculates the aspect ratio as a percentage.
+/// This function calculates the aspect ratio of a given width and height
+/// as a percentage of the width.
+///
+/// @param {number} $width - The width value in pixels.
+/// @param {number} $height - The height value in pixels.
+/// @return {percentage} - The aspect ratio as a percentage value.
 @function ratio($width, $height) {
     @return math.div($height, $width) * 100%;
 }
 
-/**
- * Applies transparency to a color by setting its alpha value.
- *
- * @param {color} $color - The color to modify.
- * @param {boolean} $as-rgb - If return the color in rgb or in list values.
- *
- * @return {color, list} - The transparentized color.
- */
+/// Applies transparency to a color by setting its alpha value.
+/// This function reduces the opacity of the given color based on a specified
+/// opacity level and can return the color in RGB format or as a list of values.
+///
+/// @param {color} $color - The color to modify.
+/// @param {boolean} $as-rgb - If true, the color is returned in RGB format. Defaults to true, meaning the color will be returned as `rgb(red green blue)`.
+/// @return {color, list} - The color with transparency applied in either `rgb` format or as a list of red, green, and blue channels.
 @function color-rgb($color, $as-rgb: true) {
-    $rgb: color.channel($color, 'red'), color.channel($color, 'green'),
-        color.channel($color, 'blue');
+    $red: color.channel($color, 'red');
+    $green: color.channel($color, 'green');
+    $blue: color.channel($color, 'blue');
 
     @if true == $as-rgb {
-        @return rgb($rgb);
+        @return rgb($red $green $blue);
     }
 
-    @return $rgb;
+    @return (red: $red, green: $green, blue: $blue);
 }
 
-/**
- * Applies transparency to a color by setting its alpha value.
- *
- * @param {color} $color - The color to modify.
- * @param {number} $opacity - The desired opacity (default: 0.5).
- *
- * @return {color} - The transparentized color.
- */
-@function color-alpha($color, $opacity: 0.5) {
-    @return rgba(color-rgb($color, false), $opacity);
+/// Applies transparency to a color by setting its alpha value.
+/// This function applies the specified opacity level to the given color,
+/// and returns the color in RGBA format.
+///
+/// @param {color} $color - The color to modify.
+/// @param {number} $opacity - The desired opacity level, from 0% (fully transparent) to 100% (fully opaque). Defaults to 50%.
+/// @return {color} - The color with the specified alpha value applied in RGBA format.
+@function color-alpha($color, $opacity: 50%) {
+    $color-map: color-rgb($color, false);
+
+    @return rgb(map.get($color-map, red) map.get($color-map, green) map.get($color-map, blue) / $opacity);
 }
 
-/**
- * Calculates the fluid font size based on the viewport width using the `clamp()` function.
- * 
- * This function retrieves the base font size from a map and calculates a fluid font size 
- * based on the provided minimum and maximum viewport width values.
- * 
- * @param {Number} $min - The minimum font size in pixels, used to limit the scaling of the font size.
- * @param {Number} $fluid-size - The minimum viewport width in `vw` units, used to calculate the fluid font size.
- * @param {Number} $max - The maximum font size in pixels, used to limit the scaling of the font size.
- * 
- * @return {String} - A string representing the fluid font size using the `clamp()` function.
- */
+/// Calculates the fluid font size based on the viewport width using the `clamp()` function.
+/// This function dynamically calculates a fluid font size based on the viewport width
+/// and ensures that the font size never falls below the minimum or exceeds the maximum.
+///
+/// @param {Number} $min - The minimum font size in pixels, used to limit the scaling of the font size.
+/// @param {Number} $fluid-size - The viewport width (in `vw`) at which the font size will be based.
+/// @param {Number} $max - The maximum font size in pixels, used to limit the scaling of the font size.
+/// @return {String} - A string representing the fluid font size using the `clamp()` function, which can be used directly in the CSS style.
 @function calculate-fluid-font($min, $fluid-size, $max) {
     // Ensure the fluid-size is unitless before performing operations
     $fluid-size: strip-unit($fluid-size);
 
     // Return the calculated fluid font size using clamp()
-    @return clamp(px-to-rem($min), #{$fluid-size}vw, px-to-rem($max));
+    @return clamp(#{px-to-rem($min)}, #{$fluid-size}vw, #{px-to-rem($max)});
 }
 
-/**
- * Adjusts the primary color to avoid problematic color ranges for vision deficiencies.
- *
- * @param {color} $color - The color to be adjusted.
- * @param {string} [$deficiency=''] - The deficiency type ('protanopia', 'deuteranopia', 'tritanopia').
- * @param {int} $iterations - The number of iterations to try (to avoid infinite loops).
- *
- * @return {color} - The adjusted color.
- */
+/// Adjusts the primary color to avoid problematic color ranges for vision deficiencies.
+/// This function adjusts the given color to avoid specific problematic color ranges
+/// that may be difficult to differentiate for individuals with certain types of color blindness.
+///
+/// @param {color} $color - The color to be adjusted.
+/// @param {string} [$deficiency=''] - The type of color deficiency: 'protanopia', 'deuteranopia', or 'tritanopia'. Defaults to no deficiency adjustment.
+/// @param {int} $iterations - The number of iterations to attempt adjustments, used to avoid infinite loops.
+/// @return {color} - The adjusted color, ensuring it's more distinguishable for the specified deficiency.
 @function adjust-for-deficiency($color, $deficiency: '', $iterations: 3) {
     @if $iterations <= 0 {
         @return $color;
     }
 
-    $hue: color.channel($color, 'hue');
+    // Convert hex to HSL
+    $hue: color.hue(hsl(color.hue($color), color.saturation($color), color.lightness($color)));
 
     // Adjust the color for protanopia (red perception issue)
     @if 'protanopia' == $deficiency and 0deg <= $hue and $hue <= 20deg {
-        @return adjust-for-deficiency(
-            color.adjust($color, $hue: -20deg),
-            $deficiency,
-            $iterations - 1
-        );
+        @return adjust-for-deficiency(color.adjust($color, $hue: -20deg), $deficiency, $iterations - 1);
     }
 
     // Adjust the color for deutranopia (green perception issue)
-    @else if 'deuteranopia' == $deficiency and 70deg <= $hue and $hue <= 170deg
-    {
-        @return adjust-for-deficiency(
-            color.adjust($color, $hue: 20deg),
-            $deficiency,
-            $iterations - 1
-        );
+    @else if 'deuteranopia' == $deficiency and 70deg <= $hue and $hue <= 170deg {
+        @return adjust-for-deficiency(color.adjust($color, $hue: 20deg), $deficiency, $iterations - 1);
     }
 
     // Adjust the color for tritanopia (blue perception issue)
     @else if 'tritanopia' == $deficiency and 180deg <= $hue and $hue <= 220deg {
-        @return adjust-for-deficiency(
-            color.adjust($color, $hue: 20deg),
-            $deficiency,
-            $iterations - 1
-        );
+        @return adjust-for-deficiency(color.adjust($color, $hue: 20deg), $deficiency, $iterations - 1);
     }
 
     @return $color;
