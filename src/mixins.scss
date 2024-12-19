@@ -1,21 +1,20 @@
 @use 'sass:map';
 @use 'sass:math';
-@use 'variables';
-@use 'functions';
+@use 'sass:color';
+@use 'variables' as SylverShadeVariables;
+@use 'functions' as SylverShadeFunctions;
 
-/**
- * Cuts corners of an element using a `clip-path` polygon.
- *
- * @param {map} $values - A map of corner values (e.g., `top-left`, `top-right`).
- * @param {string|null} $symmetry - Optional symmetry setting (e.g., `horizontal`, `vertical`).
- *
- * @throws Error if an invalid symmetry is provided.
- */
+/// Mixin to cut corners of an element using a `clip-path` polygon.
+/// This mixin allows you to cut corners of an element in a polygonal shape.
+///
+/// @param {map} $values - A map containing the corner values (`top-left`, `top-right`, `bottom-right`, `bottom-left`).
+/// @param {string|null} $symmetry - Optional parameter to define the symmetry of the corners (e.g., `horizontal`, `vertical`).
+/// @throws {Error} If an invalid symmetry is provided.
 @mixin corners-cut($values, $symmetry: null) {
     $corners: $values;
 
     @if null != $symmetry {
-        $corners: corners-cut-symmetry($values, $symmetry);
+        $corners: SylverShadeFunctions.corners-cut-symmetry($values, $symmetry);
     }
 
     $top-left: map.get($corners, top-left, 0);
@@ -23,64 +22,62 @@
     $bottom-right: map.get($corners, bottom-right, 0);
     $bottom-left: map.get($corners, bottom-left, 0);
 
-    /* prettier-ignore */
+    // prettier-ignore
     clip-path: polygon(
-        0 #{px-to-rem($top-left, (force-zero-rem: true))},
-        #{px-to-rem($top-left, (force-zero-rem: true))} 0,
-        calc(100% - #{px-to-rem($top-right, (force-zero-rem: true))}) 0,
-        100% #{px-to-rem($top-right, (force-zero-rem: true))},
-        100% calc(100% - #{px-to-rem($bottom-right, (force-zero-rem: true))}),
-        calc(100% - #{px-to-rem($bottom-right, (force-zero-rem: true))}) 100%,
-        #{px-to-rem($bottom-left, (force-zero-rem: true))} 100%,
-        0 calc(100% - #{px-to-rem($bottom-left, (force-zero-rem: true))})
+        0 #{SylverShadeFunctions.px-to-rem($top-left, (force-zero-rem: true))},
+        #{SylverShadeFunctions.px-to-rem($top-left, (force-zero-rem: true))} 0,
+        calc(100% - #{SylverShadeFunctions.px-to-rem($top-right, (force-zero-rem: true))}) 0,
+        100% #{SylverShadeFunctions.px-to-rem($top-right, (force-zero-rem: true))},
+        100% calc(100% - #{SylverShadeFunctions.px-to-rem($bottom-right, (force-zero-rem: true))}),
+        calc(100% - #{SylverShadeFunctions.px-to-rem($bottom-right, (force-zero-rem: true))}) 100%,
+        #{SylverShadeFunctions.px-to-rem($bottom-left, (force-zero-rem: true))} 100%,
+        0 calc(100% - #{SylverShadeFunctions.px-to-rem($bottom-left, (force-zero-rem: true))})
     );
 }
 
-/**
- * Adds elevation (box-shadow) to an element.
- *
- * @param {number} $elevation - Elevation level (0 or higher).
- * @param {color} $color - The shadow color (default: `var(--box-shadow-color)`).
- */
-@mixin elevation($elevation: 0, $color: var(--box-shadow-color)) {
+/// Mixin to add elevation (box-shadow) to an element.
+/// This mixin applies a box-shadow based on the given elevation level and color.
+///
+/// @param {number} $elevation - The elevation level (0 or higher).
+/// @param {color} $color - The shadow color (default: `#000`).
+@mixin elevation($elevation: 0, $color: #000) {
     box-shadow:
-        px-to-rem(get-elevation-value($elevation, 1, 'size'))
-            color-alpha($color, get-elevation-value($elevation, 1, 'alpha')),
-        px-to-rem(get-elevation-value($elevation, 2, 'size'))
-            color-alpha($color, get-elevation-value($elevation, 2, 'alpha')),
-        px-to-rem(get-elevation-value($elevation, 3, 'size'))
-            color-alpha($color, get-elevation-value($elevation, 3, 'alpha'));
+        SylverShadeFunctions.px-to-rem(SylverShadeFunctions.get-elevation-value($elevation, 1, 'size'))
+            SylverShadeFunctions.color-alpha($color, SylverShadeFunctions.get-elevation-value($elevation, 1, 'alpha')),
+        SylverShadeFunctions.px-to-rem(SylverShadeFunctions.get-elevation-value($elevation, 2, 'size'))
+            SylverShadeFunctions.color-alpha($color, SylverShadeFunctions.get-elevation-value($elevation, 2, 'alpha')),
+        SylverShadeFunctions.px-to-rem(SylverShadeFunctions.get-elevation-value($elevation, 3, 'size'))
+            SylverShadeFunctions.color-alpha($color, SylverShadeFunctions.get-elevation-value($elevation, 3, 'alpha'));
 }
 
-/**
- * Generates media queries for responsive design.
- *
- * @param {string|null} $key - Breakpoint key (e.g., `sm`, `md`, or `lg`).
- * @param {string|null} $orientation - Orientation (`portrait` or `landscape`).
- * @param {string} $range - Range type (`min`, `max`, or `both`).
- *
- * @content - Content to be wrapped inside the media query.
- *
- * @throws Error if an invalid breakpoint or orientation is provided.
- */
+/// Mixin to handle media queries based on breakpoints and orientation.
+/// This mixin generates media queries for responsive design based on breakpoints.
+///
+/// @param {string|null} $key - A specific breakpoint key to target (optional).
+/// @param {string|null} $orientation - The orientation (e.g., `portrait`, `landscape`).
+/// @param {string} $range - Range type (e.g., `min`, `max`, `both`).
 @mixin media-queries($key: null, $orientation: null, $range: min) {
+    // prettier-ignore
+    @if $orientation != null and not map.has-key(SylverShadeVariables.$breakpoints, $orientation) {
+        @error "Orientation '#{$orientation}' not available. Use 'landscape' or 'portrait'.";
+    }
+
+    $breakpoints: if(
+        null != $orientation,
+        map.get(SylverShadeVariables.$breakpoints, $orientation),
+        SylverShadeVariables.$breakpoints
+    );
+
+    // Parcours des breakpoints pour chaque orientation
     @each $direction, $sizes in $breakpoints {
-        @if null != $orientation or $orientation != $direction {
-            @error "Orientation '#{$orientation}' not available, use 'landscape' or 'portrait'.";
-        }
-
-        @if null != $key and not map.has-key($sizes, $key) {
-            @error "Container '#{$key}' not found for orientation '#{$orientation}'.";
-        }
-
-        @if null != $key and map.has-key($sizes, $key) {
-            $config: map.get($sizes, $key);
-
-            @include generate-media-query($config, $direction, $range) {
-                @content;
-            }
-        } @else {
-            @each $currentKey, $config in $sizes {
+        @each $currentKey, $config in $sizes {
+            @if null != $key {
+                @if $currentKey == $key {
+                    @include generate-media-query($config, $direction, $range) {
+                        @content;
+                    }
+                }
+            } @else {
                 @include generate-media-query($config, $direction, $range) {
                     @content;
                 }
@@ -89,20 +86,19 @@
     }
 }
 
-/**
- * Helper mixin to generate a media query.
- *
- * @param {map} $config - Breakpoint configuration map (contains `min-width` and `max-width`).
- * @param {string} $direction - Orientation (`portrait` or `landscape`).
- * @param {string} $range - Range type (`min`, `max`, or `both`).
- *
- * @content - Content to be wrapped inside the media query.
- */
+/// Helper mixin to generate a media query.
+/// This mixin is used to wrap content inside a media query based on breakpoints and orientation.
+///
+/// @param {map} $config - The breakpoint configuration map (includes `min-width` and `max-width`).
+/// @param {string} $direction - Orientation type (`portrait`, `landscape`).
+/// @param {string} $range - The range type (`min`, `max`, `both`).
+/// @content - Content to be wrapped inside the media query.
 @mixin generate-media-query($config, $direction, $range) {
     $media-query: '';
 
     @if 'min' == $range or 'both' == $range {
-        $media-query: '#{$media-query} (min-width: #{px-to-rem(map.get($config, min-width))})';
+        $min-width: SylverShadeFunctions.px-to-rem(map.get($config, min-width));
+        $media-query: '#{$media-query} (min-width: #{$min-width})';
     }
 
     @if 'max' == $range or 'both' == $range {
@@ -110,7 +106,8 @@
             $media-query: '#{$media-query} and ';
         }
 
-        $media-query: '#{$media-query}(max-width: #{px-to-rem(map.get($config, max-width))})';
+        $max-width: SylverShadeFunctions.px-to-rem(map.get($config, max-width));
+        $media-query: '#{$media-query}(max-width: #{$max-width})';
     }
 
     $media-query: '#{$media-query} and (orientation: #{$direction})';
@@ -120,19 +117,21 @@
     }
 }
 
-/**
- * Applies a specific shape to an element using border-radius.
- *
- * @param {string} $shape - Shape name (e.g., `circle`, `rounded`).
- * @param {string|null} $cornerOrSide - Specific corner or side (e.g., `top-left` or `bottom`).
- *
- * @throws Error if an invalid corner or side is provided.
- */
+/// Mixin to apply a specific shape to an element using border-radius.
+/// This mixin allows you to apply different shapes (e.g., circle, rounded) to elements.
+///
+/// @param {string} $shape - The shape name (e.g., `circle`, `rounded`).
+/// @param {string|null} $cornerOrSide - A specific corner or side to apply the shape (optional).
+/// @throws {Error} If an invalid corner or side is provided.
 @mixin shape($shape, $cornerOrSide: null) {
-    $radius: map.get($shape-radius, $shape, $shape);
+    $radius: if(
+        map.has-key(SylverShadeVariables.$shape-radius, $shape),
+        map.get(SylverShadeVariables.$shape-radius, $shape),
+        $shape
+    );
 
     @if '%' != math.unit($radius) {
-        $radius: px-to-rem($radius);
+        $radius: SylverShadeFunctions.px-to-rem($radius);
     }
 
     $top-left: 0;
@@ -172,153 +171,128 @@
     border-radius: $top-left $top-right $bottom-right $bottom-left;
 }
 
-/**
- * Creates a triangle using borders.
- *
- * @param {string} $direction - Triangle direction (e.g., `up`, `down`, `left`, `right`).
- * @param {number} $size - Size of the triangle in pixels.
- * @param {color} $color - Triangle color (default: `currentColor`).
- *
- * @throws Error if an invalid direction is provided.
- */
+/// Mixin to create a triangle using borders.
+/// This mixin creates a triangle shape using CSS borders and can be used for indicators, pointers, etc.
+///
+/// @param {string} $direction - The triangle direction (e.g., `up`, `right`, `down`, `left`, `top-right`, `bottom-right`, `bottom-left`, `top-left`.
+/// @param {number} $size - The size of the triangle in pixels.
+/// @param {color} $color - The triangle color (default: `currentColor`).
+/// @throws {Error} If an invalid direction is provided.
 @mixin triangle($direction, $size, $color: currentColor) {
     width: 0;
     height: 0;
 
     @if 'up' == $direction {
-        border-left: px-to-rem(math.div($size, 2)) solid transparent;
-        border-right: px-to-rem(math.div($size, 2)) solid transparent;
-        border-bottom: px-to-rem($size) solid $color;
+        border-left: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: SylverShadeFunctions.px-to-rem($size) solid $color;
     } @else if 'right' == $direction {
-        border-top: px-to-rem(math.div($size, 2)) solid transparent;
-        border-bottom: px-to-rem(math.div($size, 2)) solid transparent;
-        border-left: px-to-rem($size) solid $color;
+        border-top: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-left: SylverShadeFunctions.px-to-rem($size) solid $color;
     } @else if 'down' == $direction {
-        border-left: px-to-rem(math.div($size, 2)) solid transparent;
-        border-right: px-to-rem(math.div($size, 2)) solid transparent;
-        border-top: px-to-rem($size) solid $color;
+        border-left: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-top: SylverShadeFunctions.px-to-rem($size) solid $color;
     } @else if 'left' == $direction {
-        border-top: px-to-rem(math.div($size, 2)) solid transparent;
-        border-bottom: px-to-rem(math.div($size, 2)) solid transparent;
-        border-right: px-to-rem($size) solid $color;
+        border-top: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: SylverShadeFunctions.px-to-rem($size) solid $color;
     } @else if 'top-right' == $direction {
-        border-bottom: px-to-rem($size) solid $color;
-        border-left: px-to-rem($size) solid transparent;
+        border-bottom: SylverShadeFunctions.px-to-rem($size) solid $color;
+        border-left: SylverShadeFunctions.px-to-rem($size) solid transparent;
     } @else if 'bottom-right' == $direction {
-        border-top: px-to-rem($size) solid $color;
-        border-left: px-to-rem($size) solid transparent;
+        border-top: SylverShadeFunctions.px-to-rem($size) solid $color;
+        border-left: SylverShadeFunctions.px-to-rem($size) solid transparent;
     } @else if 'bottom-left' == $direction {
-        border-top: px-to-rem($size) solid $color;
-        border-right: px-to-rem($size) solid transparent;
+        border-top: SylverShadeFunctions.px-to-rem($size) solid $color;
+        border-right: SylverShadeFunctions.px-to-rem($size) solid transparent;
     } @else if 'top-left' == $direction {
-        border-bottom: px-to-rem($size) solid $color;
-        border-right: px-to-rem($size) solid transparent;
+        border-bottom: SylverShadeFunctions.px-to-rem($size) solid $color;
+        border-right: SylverShadeFunctions.px-to-rem($size) solid transparent;
     } @else {
         @error "Invalid direction `#{$direction}`. Valid directions are: up, right, down, left, top-right, bottom-right, bottom-left, top-left.";
     }
 }
 
-/**
- * Creates a flexbox layout.
- *
- * @param {string} $direction - Flex direction (e.g., `row`, `column`).
- * @param {string} $justify - Justification (e.g., `flex-start`, `center`).
- * @param {string} $align - Alignment (e.g., `stretch`, `center`).
- * @param {string} $wrap - Wrapping behavior (`nowrap`, `wrap`).
- */
-@mixin flexbox(
-    $direction: row,
-    $justify: flex-start,
-    $align: stretch,
-    $wrap: nowrap
-) {
+/// Mixin to create a flexible layout using Flexbox.
+/// This mixin sets up a flex container with customizable direction, alignment, and wrapping properties.
+///
+/// @param {string} $direction - Flex direction (e.g., `row`, `column`). Default is `row`.
+/// @param {string} $justify - Justification of flex items (e.g., `flex-start`, `center`). Default is `flex-start`.
+/// @param {string} $align - Alignment of flex items (e.g., `stretch`, `center`). Default is `stretch`.
+/// @param {string} $wrap - Wrapping behavior for flex items (e.g., `nowrap`, `wrap`). Default is `nowrap`.
+@mixin flexbox($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
     display: flex;
     justify-content: $justify;
     align-items: $align;
     flex-flow: $direction $wrap;
 }
 
-/**
- * Creates a grid container.
- *
- * @param {number} $columns - Number of grid columns.
- * @param {number|string} $gap - Gap between grid items.
- */
-@mixin grid-container($columns: 12, $gap: 0) {
-    display: grid;
-    grid-template-columns: repeat($columns, 1fr);
-    gap: $gap;
-}
-
-/**
- * Creates a responsive grid layout.
- *
- * @param {number} $columns - Number of columns (default: `$default-grid-columns`).
- * @param {string|number} $gap - Gap size (default: small spacing).
- */
-@mixin grid($columns: $default-grid-columns, $gap: get-spacing('sm')) {
+/// Mixin to create a responsive grid layout.
+/// This mixin generates a grid with customizable columns and gaps, suitable for responsive designs.
+///
+/// @param {number} $columns - Number of columns (default is `$default-grid-columns`).
+/// @param {string|number} $gap - Gap size (default is small spacing using `get-spacing()` function).
+@mixin grid($columns: SylverShadeVariables.$default-grid-columns, $gap: SylverShadeFunctions.get-spacing('sm', true)) {
     display: grid;
     grid-template-columns: repeat($columns, 1fr);
     grid-template-rows: auto;
-    gap: px-to-rem($gap);
+    gap: SylverShadeFunctions.px-to-rem($gap);
 }
 
-/**
- * Adds padding to an element.
- *
- * @param {map} $spacings - Map of spacing values for top, right, bottom, and left.
- */
+/// Mixin to add padding to an element.
+/// This mixin sets padding values based on a provided map for each side (top, right, bottom, left).
+///
+/// @param {map} $spacings - Map with padding values for each side (top, right, bottom, left).
 @mixin padding($spacings) {
     $top: map.get($spacings, top, 0);
     $right: map.get($spacings, right, 0);
     $bottom: map.get($spacings, bottom, $top);
     $left: map.get($spacings, left, $right);
 
-    padding: px-to-rem($top $right $bottom $left);
+    padding: SylverShadeFunctions.px-to-rem($top $right $bottom $left);
 }
 
-/**
- * Generates a theme for a given primary color and theme name, including variations for color vision deficiencies.
- *
- * @param {color} $primary - The primary color for the theme (e.g., #3498db).
- * @param {string} $theme-name - The name of the theme (e.g., "dark-mode").
- */
+/// Mixin to generate a color theme based on a primary color and theme name.
+/// This mixin adjusts colors for vision deficiencies and generates color variations for a complete theme.
+///
+/// @param {color} $primary - The primary color for the theme (e.g., `#3498db`).
+/// @param {string} $theme-name - The name of the theme (e.g., `dark-mode`).
 @mixin theme($primary, $theme-name) {
     @each $value in ('', 'protanopia', 'deuteranopia', 'tritanopia') {
         @include generate-theme($primary, $theme-name, $value);
     }
 }
 
-/**
- * Generates a theme with color adjustments based on a specific vision deficiency and applies CSS variables.
- * This includes handling the color adjustment process until a valid color is found.
- *
- * @param {color} $primary - The base primary color to be adjusted (e.g., #3498db).
- * @param {string} $theme-name - The name of the theme (e.g., "dark-mode").
- * @param {string} [$deficiency=''] - The vision deficiency type ('', 'protanopia', 'deuteranopia', 'tritanopia').
- */
+/// Mixin to generate a color-adjusted theme for different vision deficiencies.
+/// This mixin adjusts the primary color based on the deficiency type and generates complementary colors.
+///
+/// @param {color} $primary - The base primary color to adjust (e.g., `#3498db`).
+/// @param {string} $theme-name - The name of the theme (e.g., `dark-mode`).
+/// @param {string} [$deficiency=''] - The vision deficiency type (`protanopia`, `deuteranopia`, `tritanopia`).
 @mixin generate-theme($primary, $theme-name, $deficiency: '') {
+    $adjusted-primary: $primary;
+
     // Initial adjustment based on deficiency
     @if 'protanopia' == $deficiency {
         $theme-name: #{$theme-name}-#{$deficiency};
-        $adjusted-primary: adjust-for-deficiency(
+        $adjusted-primary: SylverShadeFunctions.adjust-for-deficiency(
             color.adjust($primary, $hue: -40deg),
             $deficiency
         );
     } @else if 'deuteranopia' == $deficiency {
         $theme-name: #{$theme-name}-#{$deficiency};
-        $adjusted-primary: adjust-for-deficiency(
+        $adjusted-primary: SylverShadeFunctions.adjust-for-deficiency(
             color.adjust($primary, $hue: -30deg),
             $deficiency
         );
     } @else if 'tritanopia' == $deficiency {
         $theme-name: #{$theme-name}-#{$deficiency};
-        $adjusted-primary: adjust-for-deficiency(
+        $adjusted-primary: SylverShadeFunctions.adjust-for-deficiency(
             color.adjust($primary, $hue: 30deg),
             $deficiency
         );
-    } @else {
-        $adjusted-primary: $primary;
     }
 
     $complementary: color.adjust($adjusted-primary, $hue: 180deg);
@@ -336,53 +310,240 @@
     $primary-focus: color.adjust($adjusted-primary, $lightness: -10%);
     $primary-active: color.adjust($adjusted-primary, $lightness: -15%);
     $primary-disabled: color.adjust($adjusted-primary, $lightness: 30%);
+    $complementary-hover: color.adjust($complementary, $lightness: 10%);
+    $complementary-focus: color.adjust($complementary, $lightness: -10%);
+    $complementary-active: color.adjust($complementary, $lightness: -15%);
+    $complementary-disabled: color.adjust($complementary, $lightness: 30%);
+    $analogous-1-hover: color.adjust($analogous-1, $lightness: 10%);
+    $analogous-1-focus: color.adjust($analogous-1, $lightness: -10%);
+    $analogous-1-active: color.adjust($analogous-1, $lightness: -15%);
+    $analogous-1-disabled: color.adjust($analogous-1, $lightness: 30%);
+    $analogous-2-hover: color.adjust($analogous-2, $lightness: 10%);
+    $analogous-2-focus: color.adjust($analogous-2, $lightness: -10%);
+    $analogous-2-active: color.adjust($analogous-2, $lightness: -15%);
+    $analogous-2-disabled: color.adjust($analogous-2, $lightness: 30%);
+    $triadic-1-hover: color.adjust($triadic-1, $lightness: 10%);
+    $triadic-1-focus: color.adjust($triadic-1, $lightness: -10%);
+    $triadic-1-active: color.adjust($triadic-1, $lightness: -15%);
+    $triadic-1-disabled: color.adjust($triadic-1, $lightness: 30%);
+    $triadic-2-hover: color.adjust($triadic-2, $lightness: 10%);
+    $triadic-2-focus: color.adjust($triadic-2, $lightness: -10%);
+    $triadic-2-active: color.adjust($triadic-2, $lightness: -15%);
+    $triadic-2-disabled: color.adjust($triadic-2, $lightness: 30%);
+    $accent-hover: color.adjust($accent, $lightness: 10%);
+    $accent-focus: color.adjust($accent, $lightness: -10%);
+    $accent-active: color.adjust($accent, $lightness: -15%);
+    $accent-disabled: color.adjust($accent, $lightness: 30%);
+    $neutral-light-hover: color.adjust($neutral-light, $lightness: 10%);
+    $neutral-light-focus: color.adjust($neutral-light, $lightness: -10%);
+    $neutral-light-active: color.adjust($neutral-light, $lightness: -15%);
+    $neutral-light-disabled: color.adjust($neutral-light, $lightness: 30%);
+    $neutral-dark-hover: color.adjust($neutral-dark, $lightness: 10%);
+    $neutral-dark-focus: color.adjust($neutral-dark, $lightness: -10%);
+    $neutral-dark-active: color.adjust($neutral-dark, $lightness: -15%);
+    $neutral-dark-disabled: color.adjust($neutral-dark, $lightness: 30%);
+    $text-color-hover: color.adjust($text-color, $lightness: 10%);
+    $text-color-focus: color.adjust($text-color, $lightness: -10%);
+    $text-color-active: color.adjust($text-color, $lightness: -15%);
+    $text-color-disabled: color.adjust($text-color, $lightness: 30%);
+    $bg-color-hover: color.adjust($bg-color, $lightness: 10%);
+    $bg-color-focus: color.adjust($bg-color, $lightness: -10%);
+    $bg-color-active: color.adjust($bg-color, $lightness: -15%);
+    $bg-color-disabled: color.adjust($bg-color, $lightness: 30%);
+    $border-color-hover: color.adjust($border-color, $lightness: 10%);
+    $border-color-focus: color.adjust($border-color, $lightness: -10%);
+    $border-color-active: color.adjust($border-color, $lightness: -15%);
+    $border-color-disabled: color.adjust($border-color, $lightness: 30%);
     $success-color: color.mix($adjusted-primary, #0f0, 50%);
     $warning-color: color.mix($adjusted-primary, #f90, 50%);
     $error-color: color.mix($adjusted-primary, #f00, 50%);
     $info-color: color.mix($adjusted-primary, #39f, 50%);
-    $shadow-light: rgb(0 0 0 / 10%);
-    $shadow-dark: rgb(0 0 0 / 50%);
-    $gradient-primary: linear-gradient(
-        45deg,
-        $adjusted-primary,
-        color.adjust($adjusted-primary, $lightness: 30%)
-    );
-    $gradient-accent: linear-gradient(
-        45deg,
-        color.adjust($adjusted-primary, $lightness: 10%),
-        $adjusted-primary
-    );
+    $shadow-light: SylverShadeFunctions.color-alpha(#000, 0.1);
+    $shadow-dark: SylverShadeFunctions.color-alpha(#000, 0.5);
+    $gradient-primary: linear-gradient(45deg, $adjusted-primary, color.adjust($adjusted-primary, $lightness: 30%));
+    $gradient-accent: linear-gradient(45deg, color.adjust($adjusted-primary, $lightness: 10%), $adjusted-primary);
     $opacity-light: 0.2;
     $opacity-dark: 0.5;
 
-    [data-theme='#{$theme-name}'] {
-        :root {
-            --primary-color: #{$adjusted-primary};
-            --complementary: #{$complementary};
-            --analogous-1: #{$analogous-1};
-            --analogous-2: #{$analogous-2};
-            --triadic-1: #{$triadic-1};
-            --triadic-2: #{$triadic-2};
-            --accent: #{$accent};
-            --neutral-light: #{$neutral-light};
-            --neutral-dark: #{$neutral-dark};
-            --text-color: #{$text-color};
-            --bg-color: #{$bg-color};
-            --border-color: #{$border-color};
-            --success-color: #{$success-color};
-            --warning-color: #{$warning-color};
-            --error-color: #{$error-color};
-            --info-color: #{$info-color};
-            --shadow-light: #{$shadow-light};
-            --shadow-dark: #{$shadow-dark};
-            --gradient-primary: #{$gradient-primary};
-            --gradient-accent: #{$gradient-accent};
-            --opacity-light: #{$opacity-light};
-            --opacity-dark: #{$opacity-dark};
-            --primary-hover: #{$primary-hover};
-            --primary-focus: #{$primary-focus};
-            --primary-active: #{$primary-active};
-            --primary-disabled: #{$primary-disabled};
-        }
+    [data-theme="#{$theme-name}"] {
+        --primary-color: #{$adjusted-primary};
+        --primary-color-rgb: #{SylverShadeFunctions.color-rgb($adjusted-primary)};
+        --complementary: #{$complementary};
+        --complementary-rgb: #{SylverShadeFunctions.color-rgb($complementary)};
+        --analogous-1: #{$analogous-1};
+        --analogous-1-rgb: #{SylverShadeFunctions.color-rgb($analogous-1)};
+        --analogous-2: #{$analogous-2};
+        --analogous-2-rgb: #{SylverShadeFunctions.color-rgb($analogous-2)};
+        --triadic-1: #{$triadic-1};
+        --triadic-1-rgb: #{SylverShadeFunctions.color-rgb($triadic-1)};
+        --triadic-2: #{$triadic-2};
+        --triadic-2-rgb: #{SylverShadeFunctions.color-rgb($triadic-2)};
+        --accent: #{$accent};
+        --accent-rgb: #{SylverShadeFunctions.color-rgb($accent)};
+        --neutral-light: #{$neutral-light};
+        --neutral-light-rgb: #{SylverShadeFunctions.color-rgb($neutral-light)};
+        --neutral-dark: #{$neutral-dark};
+        --neutral-dark-rgb: #{SylverShadeFunctions.color-rgb($neutral-dark)};
+        --text-color: #{$text-color};
+        --text-color-rgb: #{SylverShadeFunctions.color-rgb($text-color)};
+        --bg-color: #{$bg-color};
+        --bg-color-rgb: #{SylverShadeFunctions.color-rgb($bg-color)};
+        --border-color: #{$border-color};
+        --border-color-rgb: #{SylverShadeFunctions.color-rgb($border-color)};
+        --primary-hover: #{$primary-hover};
+        --primary-hover-rgb: #{SylverShadeFunctions.color-rgb($primary-hover)};
+        --primary-focus: #{$primary-focus};
+        --primary-focus-rgb: #{SylverShadeFunctions.color-rgb($primary-focus)};
+        --primary-active: #{$primary-active};
+        --primary-active-rgb: #{SylverShadeFunctions.color-rgb($primary-active)};
+        --primary-disabled: #{$primary-disabled};
+        --primary-disabled-rgb: #{SylverShadeFunctions.color-rgb($primary-disabled)};
+        --complementary-hover: #{$complementary-hover};
+        --complementary-hover-rgb: #{SylverShadeFunctions.color-rgb($complementary-hover)};
+        --complementary-focus: #{$complementary-focus};
+        --complementary-focus-rgb: #{SylverShadeFunctions.color-rgb($complementary-focus)};
+        --complementary-active: #{$complementary-active};
+        --complementary-active-rgb: #{SylverShadeFunctions.color-rgb($complementary-active)};
+        --complementary-disabled: #{$complementary-disabled};
+        --complementary-disabled-rgb: #{SylverShadeFunctions.color-rgb($complementary-disabled)};
+        --analogous-1-hover: #{$analogous-1-hover};
+        --analogous-1-hover-rgb: #{SylverShadeFunctions.color-rgb($analogous-1-hover)};
+        --analogous-1-focus: #{$analogous-1-focus};
+        --analogous-1-focus-rgb: #{SylverShadeFunctions.color-rgb($analogous-1-focus)};
+        --analogous-1-active: #{$analogous-1-active};
+        --analogous-1-active-rgb: #{SylverShadeFunctions.color-rgb($analogous-1-active)};
+        --analogous-1-disabled: #{$analogous-1-disabled};
+        --analogous-1-disabled-rgb: #{SylverShadeFunctions.color-rgb($analogous-1-disabled)};
+        --analogous-2-hover: #{$analogous-2-hover};
+        --analogous-2-hover-rgb: #{SylverShadeFunctions.color-rgb($analogous-2-hover)};
+        --analogous-2-focus: #{$analogous-2-focus};
+        --analogous-2-focus-rgb: #{SylverShadeFunctions.color-rgb($analogous-2-focus)};
+        --analogous-2-active: #{$analogous-2-active};
+        --analogous-2-active-rgb: #{SylverShadeFunctions.color-rgb($analogous-2-active)};
+        --analogous-2-disabled: #{$analogous-2-disabled};
+        --analogous-2-disabled-rgb: #{SylverShadeFunctions.color-rgb($analogous-2-disabled)};
+        --triadic-1-hover: #{$triadic-1-hover};
+        --triadic-1-hover-rgb: #{SylverShadeFunctions.color-rgb($triadic-1-hover)};
+        --triadic-1-focus: #{$triadic-1-focus};
+        --triadic-1-focus-rgb: #{SylverShadeFunctions.color-rgb($triadic-1-focus)};
+        --triadic-1-active: #{$triadic-1-active};
+        --triadic-1-active-rgb: #{SylverShadeFunctions.color-rgb($triadic-1-active)};
+        --triadic-1-disabled: #{$triadic-1-disabled};
+        --triadic-1-disabled-rgb: #{SylverShadeFunctions.color-rgb($triadic-1-disabled)};
+        --triadic-2-hover: #{$triadic-2-hover};
+        --triadic-2-hover-rgb: #{SylverShadeFunctions.color-rgb($triadic-2-hover)};
+        --triadic-2-focus: #{$triadic-2-focus};
+        --triadic-2-focus-rgb: #{SylverShadeFunctions.color-rgb($triadic-2-focus)};
+        --triadic-2-active: #{$triadic-2-active};
+        --triadic-2-active-rgb: #{SylverShadeFunctions.color-rgb($triadic-2-active)};
+        --triadic-2-disabled: #{$triadic-2-disabled};
+        --triadic-2-disabled-rgb: #{SylverShadeFunctions.color-rgb($triadic-2-disabled)};
+        --accent-hover: #{$accent-hover};
+        --accent-hover-rgb: #{SylverShadeFunctions.color-rgb($accent-hover)};
+        --accent-focus: #{$accent-focus};
+        --accent-focus-rgb: #{SylverShadeFunctions.color-rgb($accent-focus)};
+        --accent-active: #{$accent-active};
+        --accent-active-rgb: #{SylverShadeFunctions.color-rgb($accent-active)};
+        --accent-disabled: #{$accent-disabled};
+        --accent-disabled-rgb: #{SylverShadeFunctions.color-rgb($accent-disabled)};
+        --neutral-light-hover: #{$neutral-light-hover};
+        --neutral-light-hover-rgb: #{SylverShadeFunctions.color-rgb($neutral-light-hover)};
+        --neutral-light-focus: #{$neutral-light-focus};
+        --neutral-light-focus-rgb: #{SylverShadeFunctions.color-rgb($neutral-light-focus)};
+        --neutral-light-active: #{$neutral-light-active};
+        --neutral-light-active-rgb: #{SylverShadeFunctions.color-rgb($neutral-light-active)};
+        --neutral-light-disabled: #{$neutral-light-disabled};
+        --neutral-light-disabled-rgb: #{SylverShadeFunctions.color-rgb($neutral-light-disabled)};
+        --neutral-dark-hover: #{$neutral-dark-hover};
+        --neutral-dark-hover-rgb: #{SylverShadeFunctions.color-rgb($neutral-dark-hover)};
+        --neutral-dark-focus: #{$neutral-dark-focus};
+        --neutral-dark-focus-rgb: #{SylverShadeFunctions.color-rgb($neutral-dark-focus)};
+        --neutral-dark-active: #{$neutral-dark-active};
+        --neutral-dark-active-rgb: #{SylverShadeFunctions.color-rgb($neutral-dark-active)};
+        --neutral-dark-disabled: #{$neutral-dark-disabled};
+        --neutral-dark-disabled-rgb: #{SylverShadeFunctions.color-rgb($neutral-dark-disabled)};
+        --text-color-hover: #{$text-color-hover};
+        --text-color-hover-rgb: #{SylverShadeFunctions.color-rgb($text-color-hover)};
+        --text-color-focus: #{$text-color-focus};
+        --text-color-focus-rgb: #{SylverShadeFunctions.color-rgb($text-color-focus)};
+        --text-color-active: #{$text-color-active};
+        --text-color-active-rgb: #{SylverShadeFunctions.color-rgb($text-color-active)};
+        --text-color-disabled: #{$text-color-disabled};
+        --text-color-disabled-rgb: #{SylverShadeFunctions.color-rgb($text-color-disabled)};
+        --bg-color-hover: #{$bg-color-hover};
+        --bg-color-hover-rgb: #{SylverShadeFunctions.color-rgb($bg-color-hover)};
+        --bg-color-focus: #{$bg-color-focus};
+        --bg-color-focus-rgb: #{SylverShadeFunctions.color-rgb($bg-color-focus)};
+        --bg-color-active: #{$bg-color-active};
+        --bg-color-active-rgb: #{SylverShadeFunctions.color-rgb($bg-color-active)};
+        --bg-color-disabled: #{$bg-color-disabled};
+        --bg-color-disabled-rgb: #{SylverShadeFunctions.color-rgb($bg-color-disabled)};
+        --border-color-hover: #{$border-color-hover};
+        --border-color-hover-rgb: #{SylverShadeFunctions.color-rgb($border-color-hover)};
+        --border-color-focus: #{$border-color-focus};
+        --border-color-focus-rgb: #{SylverShadeFunctions.color-rgb($border-color-focus)};
+        --border-color-active: #{$border-color-active};
+        --border-color-active-rgb: #{SylverShadeFunctions.color-rgb($border-color-active)};
+        --border-color-disabled: #{$border-color-disabled};
+        --border-color-disabled-rgb: #{SylverShadeFunctions.color-rgb($border-color-disabled)};
+        --success-color: #{$success-color};
+        --success-color-rgb: #{SylverShadeFunctions.color-rgb($success-color)};
+        --warning-color: #{$warning-color};
+        --warning-color-rgb: #{SylverShadeFunctions.color-rgb($warning-color)};
+        --error-color: #{$error-color};
+        --error-color-rgb: #{SylverShadeFunctions.color-rgb($error-color)};
+        --info-color: #{$info-color};
+        --info-color-rgb: #{SylverShadeFunctions.color-rgb($info-color)};
+        --shadow-light: #{$shadow-light};
+        --shadow-dark: #{$shadow-dark};
+        --gradient-primary: #{$gradient-primary};
+        --gradient-accent: #{$gradient-accent};
+        --opacity-light: #{$opacity-light};
+        --opacity-dark: #{$opacity-dark};
+    }
+}
+
+/// Mixin to generate utility classes for padding and margin based on a given property and value.
+/// This mixin creates responsive utility classes for different sides of an element (top, right, bottom, left).
+///
+/// @param {string} $key - The key for the spacing (e.g., `small`, `medium`, `large`).
+/// @param {string|number} $value - The value for the spacing (in pixels, rem, etc.).
+/// @param {string} $property - The CSS property for spacing (e.g., `padding`, `margin`).
+@mixin generate-spacing-utilities($key, $value, $property) {
+    /// Generate the class for all sides (padding or margin)
+    %#{$property}-#{$key} {
+        #{$property}: SylverShadeFunctions.px-to-rem($value);
+    }
+
+    /// Generate the class for the top side (padding-top or margin-top)
+    %#{$property}t-#{$key} {
+        #{$property}-top: SylverShadeFunctions.px-to-rem($value);
+    }
+
+    /// Generate the class for the right side (padding-right or margin-right)
+    %#{$property}r-#{$key} {
+        #{$property}-right: SylverShadeFunctions.px-to-rem($value);
+    }
+
+    /// Generate the class for the bottom side (padding-bottom or margin-bottom)
+    %#{$property}b-#{$key} {
+        #{$property}-bottom: SylverShadeFunctions.px-to-rem($value);
+    }
+
+    /// Generate the class for the left side (padding-left or margin-left)
+    %#{$property}l-#{$key} {
+        #{$property}-left: SylverShadeFunctions.px-to-rem($value);
+    }
+
+    /// Generate the class for vertical sides (top and bottom)
+    %#{$property}v-#{$key} {
+        #{$property}-top: SylverShadeFunctions.px-to-rem($value);
+        #{$property}-bottom: SylverShadeFunctions.px-to-rem($value);
+    }
+
+    /// Generate the class for horizontal sides (left and right)
+    %#{$property}h-#{$key} {
+        #{$property}-right: SylverShadeFunctions.px-to-rem($value);
+        #{$property}-left: SylverShadeFunctions.px-to-rem($value);
     }
 }

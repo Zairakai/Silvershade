@@ -1,51 +1,68 @@
-@use 'variables';
-@use 'functions';
-@use 'mixins';
+@use 'sass:map';
+@use 'variables' as SylverShadeVariables;
+@use 'functions' as SylverShadeFunctions;
+@use 'mixins' as SylverShadeMixins;
 
-// ========================
-// Flexbox
-// ========================
+/// Documentation for placeholder.scss
+/// This file defines utility placeholders used for flexbox, grid, typography, and font properties.
+/// These placeholders are designed to be included in other stylesheets for reusable layout and typography styles.
+
+/// ========================
+/// Flexbox Centering
+/// ========================
+/// Placeholder for centering content both horizontally and vertically using flexbox.
 %flex-center {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-// ========================
-// Grilles
-// ========================
+/// ========================
+/// Grid Centering
+/// ========================
+/// Placeholder for centering content in a grid container.
 %grid-center {
     display: grid;
     place-items: center;
 }
 
-// ========================
-// Typographie
-// ========================
-@each $hn, $value in $font-weight {
+/// ========================
+/// Typography Styles
+/// ========================
+
+/// Loop through the `$headings` map from 'variables' and generate heading styles for each h1-h6.
+/// Each heading gets its line-height, margin, padding, font-size, letter-spacing, and font-weight.
+@each $hn, $value in SylverShadeVariables.$headings {
+    /// Heading style for h1-h6
     %h#{$hn} {
         line-height: map.get($value, 'line-height');
-        margin: px-to-rem(map.get($value, 'margin'));
-        padding: px-to-rem(map.get($value, 'padding'));
+        margin: SylverShadeFunctions.px-to-rem(map.get($value, 'margin'));
+        padding: SylverShadeFunctions.px-to-rem(map.get($value, 'padding'));
         font-size: map.get($value, 'size');
         letter-spacing: map.get($value, 'spacing');
         font-weight: map.get($value, 'weight');
     }
 }
 
-@each $key, $value in $font-weight {
+/// Loop through the `$font-weight` map from 'variables' and generate font weight classes.
+@each $key, $value in SylverShadeVariables.$font-weight {
+    /// Font weight class for specific weight values.
     %font-weight-#{$key} {
         font-weight: $value;
     }
 }
 
-@each $key, $value in $font-size {
+/// Loop through the `$font-size` map from 'variables' and generate font size classes.
+@each $key, $value in SylverShadeVariables.$font-size {
+    /// Font size class with `px-to-rem()` conversion.
     %font-size-#{$key} {
-        font-size: px-to-rem($value);
+        font-size: SylverShadeFunctions.px-to-rem($value);
     }
 }
 
-@each $key, $value in $line-height {
+/// Loop through the `$line-height` map from 'variables' and generate line height classes.
+@each $key, $value in SylverShadeVariables.$line-height {
+    /// Line height class for specific line-height values.
     %line-height-#{$key} {
         line-height: $value;
     }

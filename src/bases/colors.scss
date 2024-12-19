@@ -1,177 +1,224 @@
 @use 'sass:color';
 @use 'sass:map';
 @use 'sass:meta';
-@use '../index';
+@use 'sass:string';
+@use '../index' as SylverShade;
 
-// Global flags to determine the color scheme being used.
-$black-colors: false !default;
+/// Global flags to determine the color scheme being used.
+/// The flags control the active color scheme (dark, light, or material colors).
+$dark-colors: false !default;
 $light-colors: false !default;
 $material-colors: false !default;
 
-// Option to extend or override the default colors.
+/// Option to extend or override the default colors with custom colors.
+/// Users can pass a custom map to modify or extend the default color schemes.
 $custom-colors: () !default;
 
-// Definition of the black color scheme with all its shades and variations.
-$black: (
-    // Mint green
-    primary-color: #1abc9c,
-    // Intense pink
-    complementary: #c91a6e,
-    // Cyan
-    analogous-1: #1abcc9,
-    // Chartreuse green
-    analogous-2: #9cc91a,
-    // Dark pink
-    triadic-1: #bc1a9c,
-    // Deep red
-    triadic-2: #c91a1a,
-    // Golden orange
-    accent: #f39c12,
-    // Bluish gray
-    neutral-light: #2c3e50,
-    // Deep black
-    neutral-dark: #1a252f,
-    // Off-white
-    text-color: #ecf0f1,
-    // Pure black
+/// Black color scheme definition with shades and variations.
+/// Contains primary, complementary, analogous, triadic, accent, and neutral colors.
+$dark: (
+    primary-color: #1a73e8,
+    complementary: #ff7043,
+    analogous-1: #66a3ff,
+    analogous-2: #036,
+    triadic-1: #ffeb3b,
+    triadic-2: #4caf50,
+    accent: #ff5722,
+    neutral-light: #b0bec5,
+    neutral-dark: #263238,
+    text-color: #e0e0e0,
     bg-color: #121212,
-    // Slate gray
-    border-color: #34495e,
-    // Success green
-    success-color: #27ae60,
-    // Golden yellow
-    warning-color: #f39c12,
-    // Error red
-    error-color: #e74c3c,
-    // Info blue
-    info-color: #3498db,
-    // Light shadow
-    shadow-light: color-alpha(#fff, 0.1),
-    // Deep shadow
-    shadow-dark: color-alpha(#000, 0.6),
-    // Mint green gradient
-    gradient-primary: linear-gradient(45deg, #1abc9c, #48e1c1),
-    // Orange gradient
-    gradient-accent: linear-gradient(45deg, #f39c12, #f3c96a),
-    // Light opacity value
-    opacity-light: 0.2,
-    // Dark opacity value
+    border-color: #37474f,
+    primary-hover: #1976d2,
+    primary-focus: #0d47a1,
+    primary-active: #0b3c5d,
+    primary-disabled: #90caf9,
+    complementary-hover: #ff5722,
+    complementary-focus: #d84315,
+    complementary-active: #ff3d00,
+    complementary-disabled: #ffccbc,
+    analogous-1-hover: #4a90e2,
+    analogous-1-focus: #3f8cda,
+    analogous-1-active: #2a72d8,
+    analogous-1-disabled: #a7c6f6,
+    analogous-2-hover: #00274d,
+    analogous-2-focus: #004c8c,
+    analogous-2-active: #003b74,
+    analogous-2-disabled: #b0c4d9,
+    triadic-1-hover: #fbc02d,
+    triadic-1-focus: #f9a825,
+    triadic-1-active: #ff8f00,
+    triadic-1-disabled: #fff9c4,
+    triadic-2-hover: #388e3c,
+    triadic-2-focus: #2c6d37,
+    triadic-2-active: #1b5e20,
+    triadic-2-disabled: #81c784,
+    accent-hover: #e64a19,
+    accent-focus: #d32f2f,
+    accent-active: #c2185b,
+    accent-disabled: #ffccbc,
+    neutral-light-hover: #bcc6d4,
+    neutral-light-focus: #b0bec5,
+    neutral-light-active: #9e9e9e,
+    neutral-light-disabled: #cfd8dc,
+    neutral-dark-hover: #5c6b73,
+    neutral-dark-focus: #3e4a50,
+    neutral-dark-active: #263238,
+    neutral-dark-disabled: #b0bec5,
+    text-color-hover: #d5d5d5,
+    text-color-focus: #bdbdbd,
+    text-color-active: #9e9e9e,
+    text-color-disabled: #a0a0a0,
+    bg-color-hover: #1c1c1c,
+    bg-color-focus: #121212,
+    bg-color-active: #212121,
+    bg-color-disabled: #333,
+    border-color-hover: #37474f,
+    border-color-focus: #607d8b,
+    border-color-active: #455a64,
+    border-color-disabled: #b0bec5,
+    success-color: #388e3c,
+    warning-color: #ff9800,
+    error-color: #f44336,
+    info-color: #0288d1,
+    shadow-light: rgb(0 0 0 / 20%),
+    shadow-dark: rgb(0 0 0 / 50%),
+    gradient-primary: linear-gradient(45deg, #1a73e8, #0069c0),
+    gradient-accent: linear-gradient(45deg, #ff7043, #f44336),
+    opacity-light: 0.9,
     opacity-dark: 0.8,
-    // Lighter mint green
-    primary-hover: #1ad1a9,
-    // Slightly darker mint green
-    primary-focus: #17a085,
-    // Dark mint green
-    primary-active: #128f74,
-    // Disabled mint green
-    primary-disabled: #85dccb,
 );
 
-// Definition of the light color scheme with all its shades and variations.
+/// Light color scheme definition with shades and variations.
+/// Contains primary, complementary, analogous, triadic, accent, and neutral colors.
 $light: (
-    // Light blue
-    primary-color: #4a90e2,
-    // Soft red
-    complementary: #e24a4a,
-    // Light green
-    analogous-1: #4ae290,
-    // Light blue
-    analogous-2: #4a90e2,
-    // Light orange
-    triadic-1: #e2b94a,
-    // Purple
-    triadic-2: #944ae2,
-    // Soft orange
-    accent: #e2a44a,
-    // Off-white
-    neutral-light: #f5f5f5,
-    // Light gray
-    neutral-dark: #dcdcdc,
-    // Grayish black
-    text-color: #333,
-    // White
+    primary-color: #007bff,
+    complementary: #ff5733,
+    analogous-1: #33a1ff,
+    analogous-2: #0056b3,
+    triadic-1: #ffc107,
+    triadic-2: #28a745,
+    accent: #ff8c00,
+    neutral-light: #f8f9fa,
+    neutral-dark: #343a40,
+    text-color: #212529,
     bg-color: #fff,
-    // Light gray
-    border-color: #ddd,
-    // Success green
-    success-color: #27ae60,
-    // Golden yellow
-    warning-color: #f39c12,
-    // Error red
-    error-color: #e74c3c,
-    // Info blue
-    info-color: #3498db,
-    // Light shadow
-    shadow-light: color-alpha(#000, 0.1),
-    // Medium shadow
-    shadow-dark: color-alpha(#000, 0.3),
-    // Blue gradient
-    gradient-primary: linear-gradient(45deg, #4a90e2, #a2c8f2),
-    // Orange gradient
-    gradient-accent: linear-gradient(45deg, #e2a44a, #f2c87a),
-    // Light opacity value
-    opacity-light: 0.2,
-    // Dark opacity value
+    border-color: #dee2e6,
+    primary-hover: #0056b3,
+    primary-focus: #036,
+    primary-active: #002c56,
+    primary-disabled: #a6c8ff,
+    complementary-hover: #ff3b2e,
+    complementary-focus: #e85d4e,
+    complementary-active: #ff1e00,
+    complementary-disabled: #f8c1b6,
+    analogous-1-hover: #1a75d8,
+    analogous-1-focus: #3b9ff8,
+    analogous-1-active: #007bff,
+    analogous-1-disabled: #a2c8f7,
+    analogous-2-hover: #003d77,
+    analogous-2-focus: #005b99,
+    analogous-2-active: #048,
+    analogous-2-disabled: #a6b6d4,
+    triadic-1-hover: #d39e00,
+    triadic-1-focus: #ffca2c,
+    triadic-1-active: #ffb700,
+    triadic-1-disabled: #f7e0a9,
+    triadic-2-hover: #218838,
+    triadic-2-focus: #50c878,
+    triadic-2-active: #228b22,
+    triadic-2-disabled: #b8e5a4,
+    accent-hover: #ff7f32,
+    accent-focus: #ff6518,
+    accent-active: #ff4500,
+    accent-disabled: #f7c2a1,
+    neutral-light-hover: #f1f3f5,
+    neutral-light-focus: #e0e5eb,
+    neutral-light-active: #d3d8df,
+    neutral-light-disabled: #f7f9fb,
+    neutral-dark-hover: #4a5057,
+    neutral-dark-focus: #3c4248,
+    neutral-dark-active: #2c3036,
+    neutral-dark-disabled: #6c757d,
+    text-color-hover: #495057,
+    text-color-focus: #343a40,
+    text-color-active: #212529,
+    text-color-disabled: #ced4da,
+    bg-color-hover: #f1f3f5,
+    bg-color-focus: #e9ecef,
+    bg-color-active: #dee2e6,
+    bg-color-disabled: #f8f9fa,
+    border-color-hover: #d6dbdf,
+    border-color-focus: #c6d1d9,
+    border-color-active: #b6c2c8,
+    border-color-disabled: #e1e5ea,
+    success-color: #28a745,
+    warning-color: #ffc107,
+    error-color: #dc3545,
+    info-color: #17a2b8,
+    shadow-light: rgb(0 0 0 / 10%),
+    shadow-dark: rgb(0 0 0 / 30%),
+    gradient-primary: linear-gradient(45deg, #007bff, #0056b3),
+    gradient-accent: linear-gradient(45deg, #ff5733, #ff8c00),
+    opacity-light: 0.8,
     opacity-dark: 0.6,
-    // Slightly lighter blue
-    primary-hover: #5aa3f2,
-    // Slightly darker blue
-    primary-focus: #3976c2,
-    // Darker blue
-    primary-active: #2d5e9e,
-    // Disabled blue
-    primary-disabled: #b3d3f2,
 );
 
-// Variable to store the final merged color scheme based on user options.
+/// Final color scheme variable.
+/// Merges the chosen color scheme (black, light, or custom) into one final color map.
 $final-colors: ();
 
-// Merge the black color scheme with custom overrides if $black-colors is enabled.
-@if $black-colors {
-    $final-colors: map.merge($black, $custom-colors);
+/// Merge the black color scheme with custom overrides if $dark-colors is enabled.
+@if $dark-colors {
+    $final-colors: map.merge($dark, $custom-colors);
 }
 
-// Merge the light color scheme with custom overrides if $light-colors is enabled.
+/// Merge the light color scheme with custom overrides if $light-colors is enabled.
 @else if $light-colors {
     $final-colors: map.merge($light, $custom-colors);
 }
 
-// Use only custom colors if provided as a map.
+/// Use only custom colors if provided as a map.
 @else if 'map' == meta.type-of($custom-colors) {
     $final-colors: $custom-colors;
 }
 
-// Generate CSS variables from the final color scheme if provided as a map.
+/// Generate CSS variables from the final color scheme.
+/// This block generates the CSS custom properties for colors.
 @if 'map' == meta.type-of($final-colors) {
-    :root {
-        @each $key, $hexa in $final-colors {
-            --#{$key}: $hexa;
-            --#{$key}-rgb: color-rgb(
-                $hexa,
-                false
-            );
+    @at-root {
+        :root {
+            @each $key, $hexa in $final-colors {
+                --#{$key}: #{$hexa};
+
+                @if 1 == string.index(meta.inspect($hexa), '#') and 7 == string.length(meta.inspect($hexa)) {
+                    --#{$key}-rgb: #{SylverShade.color-rgb($hexa)};
+                }
+            }
         }
     }
 }
 
 // Generate additional CSS variables for Material colors if enabled.
 @if $material-colors {
-    :root {
-        @each $key-color, $map-color in $colors {
-            @each $key, $hexa in $map-color {
-                @if 'default' == $key {
-                    --#{$key-color}: $hexa;
-                    --#{$key-color}-rgb: color-rgb(
-                        $hexa,
-                        false
-                    );
-                }
+    @at-root {
+        :root {
+            @each $key-color, $map-color in SylverShade.$colors {
+                @each $key, $hexa in $map-color {
+                    @if 'default' == $key {
+                        --#{$key-color}: #{$hexa};
 
-                --#{$key-color}-#{$key}: $hexa;
-                --#{$key-color}-#{$key}-rgb: color-rgb(
-                    $hexa,
-                    false
-                );
+                        @if 1 == string.index(meta.inspect($hexa), '#') and 7 == string.length(meta.inspect($hexa)) {
+                            --#{$key-color}-rgb: #{SylverShade.color-rgb($hexa)};
+                        }
+                    }
+
+                    --#{$key-color}-#{$key}: #{$hexa};
+
+                    @if 1 == string.index(meta.inspect($hexa), '#') and 7 == string.length(meta.inspect($hexa)) {
+                        --#{$key-color}-#{$key}-rgb: #{SylverShade.color-rgb($hexa)};
+                    }
+                }
             }
         }
     }
