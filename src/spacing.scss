@@ -8,10 +8,10 @@
 /// defined in the 'variables' module. The classes are created with a `px-to-rem()` conversion.
 @each $key, $value in SylverShadeVariables.$spacings {
     /// Generate padding utility classes
-    @include SylverShadeMixins.generate-spacing-utilities($key, $value, 'p');
+    @include SylverShadeMixins.generate-spacing-utilities($key, $value, 'p', 'padding');
 
     /// Generate margin utility classes
-    @include SylverShadeMixins.generate-spacing-utilities($key, $value, 'm');
+    @include SylverShadeMixins.generate-spacing-utilities($key, $value, 'm', 'margin');
 
     /// Gap utility class for spacing between elements
     %gap-#{$key} {
