@@ -1,6 +1,6 @@
 {
     "name": "@zairakai/silvershade",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "description": "Silvershade is a modular SCSS framework for building mobile-first, responsive layouts with a clean grid system and consistent spacing utilities.",
     "keywords": [
         "css",
@@ -43,7 +43,7 @@
         "lint": "yarn eslint 'eslint.config.js' 'prettier.config.js' 'stylelint.config.js' --max-warnings=0",
         "lint:fix": "yarn eslint 'eslint.config.js' 'prettier.config.js' 'stylelint.config.js' --fix",
         "pretty": "yarn prettier --check './src/**/*.scss' 'eslint.config.js' 'prettier.config.js' 'stylelint.config.js' 'package.json'",
-        "pretty:fix": "yarn prettier --write './src/**/*.scss' 'eslint.config.js' 'prettier.config.js' 'stylelint.config.js' 'package.json'",
+        "pretty:fix": "yarn prettier --write --log-level warn './src/**/*.scss' 'eslint.config.js' 'prettier.config.js' 'stylelint.config.js' 'package.json'",
         "publish": "npm publish --access public",
         "scsslint": "stylelint './src/**/*.scss'",
         "scsslint:fix": "stylelint './src/**/*.scss' --fix"
