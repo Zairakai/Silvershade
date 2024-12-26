@@ -198,7 +198,7 @@
 /// @return {Number} - The value of the requested container key.
 /// @throws Error if the container key is not found.
 @function get-container($key, $orientation) {
-    @if 'landscape' != $orientation or 'portrait' != $orientation {
+    @if not map.has-key(SylverShadeVariables.$breakpoints, $orientation) {
         @error "Orientation '#{$orientation}' not available, use 'landscape' or 'portrait'.";
     }
 
@@ -222,7 +222,7 @@
 /// @return {any} - The value of the requested grid property.
 /// @throws Error if the grid key or property is not found.
 @function get-grid($key, $property, $orientation) {
-    @if 'landscape' != $orientation or 'portrait' != $orientation {
+    @if not map.has-key(SylverShadeVariables.$breakpoints, $orientation) {
         @error "Orientation '#{$orientation}' not available, use 'landscape' or 'portrait'.";
     }
 
@@ -393,38 +393,4 @@
 
     // Return the calculated fluid font size using clamp()
     @return clamp(#{px-to-rem($min)}, #{$fluid-size}vw, #{px-to-rem($max)});
-}
-
-/// Adjusts the primary color to avoid problematic color ranges for vision deficiencies.
-/// This function adjusts the given color to avoid specific problematic color ranges
-/// that may be difficult to differentiate for individuals with certain types of color blindness.
-///
-/// @param {color} $color - The color to be adjusted.
-/// @param {string} [$deficiency=''] - The type of color deficiency: 'protanopia', 'deuteranopia', or 'tritanopia'. Defaults to no deficiency adjustment.
-/// @param {int} $iterations - The number of iterations to attempt adjustments, used to avoid infinite loops.
-/// @return {color} - The adjusted color, ensuring it's more distinguishable for the specified deficiency.
-@function adjust-for-deficiency($color, $deficiency: '', $iterations: 3) {
-    @if $iterations <= 0 {
-        @return $color;
-    }
-
-    // Convert hex to HSL
-    $hue: color.hue(hsl(color.hue($color), color.saturation($color), color.lightness($color)));
-
-    // Adjust the color for protanopia (red perception issue)
-    @if 'protanopia' == $deficiency and 0deg <= $hue and $hue <= 20deg {
-        @return adjust-for-deficiency(color.adjust($color, $hue: -20deg), $deficiency, $iterations - 1);
-    }
-
-    // Adjust the color for deutranopia (green perception issue)
-    @else if 'deuteranopia' == $deficiency and 70deg <= $hue and $hue <= 170deg {
-        @return adjust-for-deficiency(color.adjust($color, $hue: 20deg), $deficiency, $iterations - 1);
-    }
-
-    // Adjust the color for tritanopia (blue perception issue)
-    @else if 'tritanopia' == $deficiency and 180deg <= $hue and $hue <= 220deg {
-        @return adjust-for-deficiency(color.adjust($color, $hue: 20deg), $deficiency, $iterations - 1);
-    }
-
-    @return $color;
 }
