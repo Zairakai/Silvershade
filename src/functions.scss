@@ -4,7 +4,7 @@
 @use 'sass:math';
 @use 'sass:meta';
 @use 'sass:string';
-@use 'variables' as SylverShadeVariables;
+@use 'variables' as SilvershadeVariables;
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE DOCUMENTATION
@@ -20,7 +20,7 @@
 /// @return {number} - The unitless value.
 @function strip-unit($value) {
     @if 'number' == meta.type-of($value) and not math.is-unitless($value) {
-        $tmp: $value / ($value * 0 + 1);
+        $tmp: math.div($value, $value * 0 + 1);
 
         @return $tmp;
     }
@@ -41,6 +41,8 @@
     }
 
     @if 'string' == meta.type-of($value) and 'rem' == string.slice($value, -3) {
+        @return $value;
+    } @else if 'number' == meta.type-of($value) and '%' == math.unit($value) {
         @return $value;
     } @else if 'number' != meta.type-of($value) {
         @warn "calc-rem expects a numeric value (e.g., `16px`, `1rem`, or `16`). Received `#{$value}`. Returning the value as-is.";
@@ -74,7 +76,7 @@
     $base-font-size: if(
         map.has-key($options, 'base-font-size'),
         map.get($options, 'base-font-size'),
-        SylverShadeVariables.$default-font-size
+        SilvershadeVariables.$default-font-size
     );
     $force-rem-zero: if(map.has-key($options, 'force-zero-rem'), map.get($options, 'force-zero-rem'), false);
 
@@ -147,11 +149,11 @@
 /// @return {any} - The value associated with the specified property.
 /// @throws Error if the level, key, or property does not exist.
 @function get-elevation-value($level, $key, $property) {
-    @if not map.has-key(SylverShadeVariables.$elevations, $level) {
+    @if not map.has-key(SilvershadeVariables.$elevations, $level) {
         @error "Level '#{$level}' does not exist in \$boxShadows.";
     }
 
-    $level-map: map.get(SylverShadeVariables.$elevations, $level);
+    $level-map: map.get(SilvershadeVariables.$elevations, $level);
 
     @if not map.has-key($level-map, $key) {
         @error "Key '#{$key}' does not exist at level '#{$level}'.";
@@ -198,11 +200,11 @@
 /// @return {Number} - The value of the requested container key.
 /// @throws Error if the container key is not found.
 @function get-container($key, $orientation) {
-    @if not map.has-key(SylverShadeVariables.$breakpoints, $orientation) {
+    @if not map.has-key(SilvershadeVariables.$breakpoints, $orientation) {
         @error "Orientation '#{$orientation}' not available, use 'landscape' or 'portrait'.";
     }
 
-    $container: map.get(SylverShadeVariables.$containers, $orientation);
+    $container: map.get(SilvershadeVariables.$containers, $orientation);
 
     @if not map.has-key($container, $key) {
         @error "Container '#{$key}' not found for orientation '#{$orientation}'.";
@@ -222,11 +224,11 @@
 /// @return {any} - The value of the requested grid property.
 /// @throws Error if the grid key or property is not found.
 @function get-grid($key, $property, $orientation) {
-    @if not map.has-key(SylverShadeVariables.$breakpoints, $orientation) {
+    @if not map.has-key(SilvershadeVariables.$breakpoints, $orientation) {
         @error "Orientation '#{$orientation}' not available, use 'landscape' or 'portrait'.";
     }
 
-    $grid: map.get(SylverShadeVariables.$grids, $orientation);
+    $grid: map.get(SilvershadeVariables.$grids, $orientation);
 
     @if not map.has-key($grid, $key) {
         @error "Grid '#{$key}' not found for orientation '#{$orientation}'.";
@@ -255,11 +257,11 @@
 /// @return {any} - The value of the requested heading property.
 /// @throws Error if the heading level or property is not found.
 @function get-heading($level, $property) {
-    @if not map.has-key(SylverShadeVariables.$headings, $level) {
+    @if not map.has-key(SilvershadeVariables.$headings, $level) {
         @error "Heading level '#{$level}' not found.";
     }
 
-    $heading: map.get(SylverShadeVariables.$headings, $level);
+    $heading: map.get(SilvershadeVariables.$headings, $level);
 
     @if not map.has-key($heading, $property) {
         @error "Property '#{$property}' of heading level '#{$level}' not found.";
@@ -282,11 +284,11 @@
 /// @return {number} - The rem value of the spacing.
 /// @throws Error if the spacing key is not found.
 @function get-spacing($key, $as-px: false) {
-    @if not map.has-key(SylverShadeVariables.$spacings, $key) {
+    @if not map.has-key(SilvershadeVariables.$spacings, $key) {
         @error "Spacing key '#{$key}' not found.";
     }
 
-    $value: map.get(SylverShadeVariables.$spacings, $key);
+    $value: map.get(SilvershadeVariables.$spacings, $key);
 
     @if $as-px {
         @return $value;
@@ -304,11 +306,11 @@
 /// @return {number} - The line-height value.
 /// @throws Error if the line-height key is not found.
 @function get-line-height($key) {
-    @if not map.has-key(SylverShadeVariables.$line-height, $key) {
+    @if not map.has-key(SilvershadeVariables.$line-height, $key) {
         @error "Line-height key '#{$key}' not found.";
     }
 
-    $value: map.get(SylverShadeVariables.$line-height, $key);
+    $value: map.get(SilvershadeVariables.$line-height, $key);
 
     @return $value;
 }

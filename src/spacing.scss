@@ -1,20 +1,20 @@
-@use 'variables' as SylverShadeVariables;
-@use 'functions' as SylverShadeFunctions;
-@use 'mixins' as SylverShadeMixins;
+@use 'variables' as SilvershadeVariables;
+@use 'functions' as SilvershadeFunctions;
+@use 'mixins' as SilvershadeMixins;
 
 /// Documentation for spacing.scss
 /// This file defines spacing utility classes for padding, margin, and gap.
 /// Each utility class is generated dynamically based on values from the `$spacings` map
 /// defined in the 'variables' module. The classes are created with a `px-to-rem()` conversion.
-@each $key, $value in SylverShadeVariables.$spacings {
+@each $key, $value in SilvershadeVariables.$spacings {
     /// Generate padding utility classes
-    @include SylverShadeMixins.generate-spacing-utilities($key, $value, 'p', 'padding');
+    @include SilvershadeMixins.generate-spacing-utilities($key, $value, 'p', 'padding');
 
     /// Generate margin utility classes
-    @include SylverShadeMixins.generate-spacing-utilities($key, $value, 'm', 'margin');
+    @include SilvershadeMixins.generate-spacing-utilities($key, $value, 'm', 'margin');
 
     /// Gap utility class for spacing between elements
     %gap-#{$key} {
-        gap: SylverShadeFunctions.px-to-rem($value);
+        gap: SilvershadeFunctions.px-to-rem($value);
     }
 }
