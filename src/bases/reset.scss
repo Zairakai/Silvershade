@@ -110,7 +110,7 @@
     /// 2. Apply consistent text decoration for abbreviations in major browsers.
     abbr[title] {
         border-bottom: 1px dotted; /// 1
-        // border-bottom: SylverShade.px-to-rem(1) dotted; /// 1
+        // border-bottom: Silvershade.px-to-rem(1) dotted; /// 1
     }
 
     /// Apply proper bold styling for text in Chrome, Edge, and Safari.
@@ -138,7 +138,7 @@
     samp {
         font-family: monospace; /// 1
         font-size: 16px; /// 2
-        // font-size: SylverShade.px-to-rem(16); /// 2
+        // font-size: Silvershade.px-to-rem(16); /// 2
     }
 
     /// Ensure small text renders at the correct size across all browsers.
@@ -159,14 +159,14 @@
     /// Offset `sub` elements downward relative to the baseline.
     sub {
         bottom: -4px; /// Adjust position for proper placement
-        // bottom: SylverShade.px-to-rem(-4); /// Adjust position for proper placement
+        // bottom: Silvershade.px-to-rem(-4); /// Adjust position for proper placement
         vertical-align: sub;
     }
 
     /// Offset `sup` elements upward relative to the baseline.
     sup {
         top: -8px; /// Adjust position for proper placement
-        // top: SylverShade.px-to-rem(-8); /// Adjust position for proper placement
+        // top: Silvershade.px-to-rem(-8); /// Adjust position for proper placement
         vertical-align: super;
     }
 
@@ -189,7 +189,7 @@
     /// Add consistent margins for figure elements in IE 8/9 and Safari.
     figure {
         margin: 16px 40px; /// Set default top/bottom and left/right margins
-        // margin: SylverShade.px-to-rem(16 40); /// Set default top/bottom and left/right margins
+        // margin: Silvershade.px-to-rem(16 40); /// Set default top/bottom and left/right margins
     }
 
     /// ========================
@@ -267,17 +267,17 @@
     [type='reset']:-moz-focusring,
     [type='submit']:-moz-focusring {
         outline: 1px dotted #1a1f21; /// Add dotted outline
-        // outline: SylverShade.px-to-rem(1) dotted #1a1f21; /// Add dotted outline
+        // outline: Silvershade.px-to-rem(1) dotted #1a1f21; /// Add dotted outline
     }
 
     /// Add consistent padding and border styling in Firefox.
     fieldset {
         border: 1px solid #c0c0c0; /// Define border
-        // border: SylverShade.px-to-rem(1) solid #c0c0c0; /// Define border
+        // border: Silvershade.px-to-rem(1) solid #c0c0c0; /// Define border
         margin: 0 2px; /// Reset margins
-        // margin: SylverShade.px-to-rem(0 2); /// Reset margins
+        // margin: Silvershade.px-to-rem(0 2); /// Reset margins
         padding: 6px 12px 10px; /// Adjust padding
-        // padding: SylverShade.px-to-rem(6) SylverShade.px-to-rem(12) SylverShade.px-to-rem(10); /// Adjust padding
+        // padding: Silvershade.px-to-rem(6) Silvershade.px-to-rem(12) Silvershade.px-to-rem(10); /// Adjust padding
     }
 
     /// 1. Fix text wrapping in Edge and IE.
@@ -328,7 +328,7 @@
         box-sizing: content-box; /// Consistent box model
         appearance: textfield; /// Fix odd appearance
         outline-offset: -2px; /// Adjust outline spacing
-        // outline-offset: SylverShade.px-to-rem(-2); /// Adjust outline spacing
+        // outline-offset: Silvershade.px-to-rem(-2); /// Adjust outline spacing
     }
 
     /// Remove inner padding from search fields in Chrome and Safari on macOS.

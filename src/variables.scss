@@ -1,9 +1,38 @@
+@use 'sass:list';
 @use 'sass:map';
 
 /// --------------------------------------------
 /// File : _variables.scss
 /// Description : Global variables (colors, spacings, typography, breakpoints).
 /// --------------------------------------------
+
+/// ========================
+/// Used Variables
+/// ========================
+$used-variables: ();
+
+@function add-used-variable($var-name) {
+    @if not map.has-key($used-variables, $var-name) {
+        $used-variables: map.merge(
+            $used-variables,
+            (
+                $var-name: true,
+            )
+        ) !global;
+    }
+
+    @return $used-variables;
+}
+
+@function vars($var-name) {
+    $_: add-used-variable($var-name);
+
+    @return var(--#{$var-name});
+}
+
+@function get-used-variables() {
+    @return map.keys($used-variables);
+}
 
 /// ========================
 /// Breakpoints
@@ -113,74 +142,74 @@ $containers: (
 
 /// Default grid
 ///
-/// Defines the default number of columns for the grid system. A 12-column grid is commonly used in responsive design.
+/// Defines the default number of cols for the grid system. A 12-column grid is commonly used in responsive design.
 $default-grid-columns: 1 !default;
 
 /// CSS grid configuration for each breakpoint.
-/// Defines the number of columns and gutter sizes based on orientations and screen sizes.
+/// Defines the number of cols and gap sizes based on orientations and screen sizes.
 ///
 /// Each breakpoint contains:
-/// - number of columns (e.g., 2, 3, 4, etc.)
-/// - gutter size (spacing between columns) in `rem` units
+/// - number of cols (e.g., 2, 3, 4, etc.)
+/// - gap size (spacing between cols) in `rem` units
 $grids: (
     landscape: (
         small: (
-            columns: 4,
-            gutter: 16px,
+            cols: 4,
+            gap: 16px,
         ),
         small-tablet: (
-            columns: 6,
-            gutter: 24px,
+            cols: 6,
+            gap: 24px,
         ),
         large-tablet: (
-            columns: 8,
-            gutter: 32px,
+            cols: 8,
+            gap: 32px,
         ),
         laptop: (
-            columns: 8,
-            gutter: 32px,
+            cols: 8,
+            gap: 32px,
         ),
         desktop: (
-            columns: 12,
-            gutter: 32px,
+            cols: 12,
+            gap: 32px,
         ),
         wide-screen: (
-            columns: 12,
-            gutter: 32px,
+            cols: 12,
+            gap: 32px,
         ),
     ),
     portrait: (
         small: (
-            columns: 2,
-            gutter: 16px,
+            cols: 2,
+            gap: 16px,
         ),
         medium: (
-            columns: 2,
-            gutter: 16px,
+            cols: 2,
+            gap: 16px,
         ),
         large: (
-            columns: 3,
-            gutter: 16px,
+            cols: 3,
+            gap: 16px,
         ),
         small-tablet: (
-            columns: 4,
-            gutter: 24px,
+            cols: 4,
+            gap: 24px,
         ),
         large-tablet: (
-            columns: 6,
-            gutter: 32px,
+            cols: 6,
+            gap: 32px,
         ),
         laptop: (
-            columns: 8,
-            gutter: 32px,
+            cols: 8,
+            gap: 32px,
         ),
         desktop: (
-            columns: 12,
-            gutter: 32px,
+            cols: 12,
+            gap: 32px,
         ),
         wide-screen: (
-            columns: 12,
-            gutter: 32px,
+            cols: 12,
+            gap: 32px,
         ),
     ),
 ) !default;
@@ -242,9 +271,20 @@ $font-family: (
 /// - base: 400
 /// - bold: 700
 $font-weight: (
+    thin: 100,
+    extra-light: 200,
+    ultra-light: 200,
     light: 300,
+    normal: 400,
     base: 400,
+    medium: 500,
+    semi-bold: 600,
+    demi-bold: 600,
     bold: 700,
+    extra-bold: 800,
+    ultra-bold: 800,
+    "black": 900,
+    heavy: 900,
 ) !default;
 
 /// Font size map
@@ -252,11 +292,14 @@ $font-weight: (
 /// Defines the font sizes for various text elements in `rem` units.
 /// The base font size is `16px`, and other sizes are defined relative to it.
 $font-size: (
+    12: 12px,
     14: 14px,
-    base: 16px,
     16: 16px,
+    base: 16px,
     18: 18px,
+    medium: 18px,
     20: 20px,
+    large: 20px,
     22: 22px,
     24: 24px,
     26: 26px,
@@ -283,59 +326,59 @@ $font-size: (
 /// Uses a `min()` and `max()` function to determine the font size based on the screen's width.
 $font-size-fluid: (
     sm: (
-        min: map.get($font-size, 14),
+        min: if(map.has-key($font-size, 14), map.get($font-size, 14), 14),
         fluid: 1.4vw,
-        max: map.get($font-size, base),
+        max: if(map.has-key($font-size, base), map.get($font-size, base), base),
     ),
     base: (
-        min: map.get($font-size, base),
+        min: if(map.has-key($font-size, base), map.get($font-size, base), base),
         fluid: 1.6vw,
-        max: map.get($font-size, 18),
+        max: if(map.has-key($font-size, 18), map.get($font-size, 18), 18),
     ),
     md: (
-        min: map.get($font-size, 18),
+        min: if(map.has-key($font-size, 18), map.get($font-size, 18), 18),
         fluid: 2vw,
-        max: map.get($font-size, 20),
+        max: if(map.has-key($font-size, 20), map.get($font-size, 20), 20),
     ),
     lg: (
-        min: map.get($font-size, 20),
+        min: if(map.has-key($font-size, 20), map.get($font-size, 20), 20),
         fluid: 2.4vw,
-        max: map.get($font-size, 24),
+        max: if(map.has-key($font-size, 24), map.get($font-size, 24), 24),
     ),
     xl: (
-        min: map.get($font-size, 24),
+        min: if(map.has-key($font-size, 24), map.get($font-size, 24), 24),
         fluid: 3vw,
-        max: map.get($font-size, 26),
+        max: if(map.has-key($font-size, 26), map.get($font-size, 26), 26),
     ),
     h6: (
-        min: map.get($font-size, 16),
+        min: if(map.has-key($font-size, 16), map.get($font-size, 16), 16),
         fluid: 1.2vw,
-        max: map.get($font-size, 20),
+        max: if(map.has-key($font-size, 20), map.get($font-size, 20), 20),
     ),
     h5: (
-        min: map.get($font-size, 20),
+        min: if(map.has-key($font-size, 20), map.get($font-size, 20), 20),
         fluid: 1.5vw,
-        max: map.get($font-size, 24),
+        max: if(map.has-key($font-size, 24), map.get($font-size, 24), 24),
     ),
     h4: (
-        min: map.get($font-size, 24),
+        min: if(map.has-key($font-size, 24), map.get($font-size, 24), 24),
         fluid: 2vw,
-        max: map.get($font-size, 28),
+        max: if(map.has-key($font-size, 28), map.get($font-size, 28), 28),
     ),
     h3: (
-        min: map.get($font-size, 28),
+        min: if(map.has-key($font-size, 28), map.get($font-size, 28), 28),
         fluid: 2.5vw,
-        max: map.get($font-size, 30),
+        max: if(map.has-key($font-size, 30), map.get($font-size, 30), 30),
     ),
     h2: (
-        min: map.get($font-size, 30),
+        min: if(map.has-key($font-size, 30), map.get($font-size, 30), 30),
         fluid: 3vw,
-        max: map.get($font-size, 32),
+        max: if(map.has-key($font-size, 32), map.get($font-size, 32), 32),
     ),
     h1: (
-        min: map.get($font-size, 32),
+        min: if(map.has-key($font-size, 32), map.get($font-size, 32), 32),
         fluid: 4vw,
-        max: map.get($font-size, 34),
+        max: if(map.has-key($font-size, 34), map.get($font-size, 34), 34),
     ),
 ) !default;
 
@@ -348,6 +391,59 @@ $line-height: (
     4: 1.4,
     5: 1.5,
     6: 1.6,
+    16: 16px,
+    large: 20px,
+) !default;
+
+/// Letter spacing
+/// ========================
+/// Defines letters spacing for various text elements.
+$letter-spacings: (
+    neg-one-half: -1.5,
+    neg-one-fiftieth: -1.5,
+    neg-one-fortieth: -1.4,
+    neg-one-third: -1.33,
+    neg-one-thirtieth: -1.3,
+    neg-one-quarter: -1.25,
+    neg-one-twentieth: -1.2,
+    neg-one-tenth: -1.1,
+    neg-one: -1,
+    neg-ninetieth: -0.9,
+    neg-eightieth: -0.8,
+    neg-seventieth: -0.7,
+    neg-two-thirds: -0.66,
+    neg-sixtieth: -0.6,
+    neg-half: -0.5,
+    neg-fiftieth: -0.5,
+    neg-fortieth: -0.4,
+    neg-third: -0.33,
+    neg-thirtieth: -0.3,
+    neg-quarter: -0.25,
+    neg-twentieth: -0.2,
+    neg-tenth: -0.1,
+    normal: 0,
+    tenth: 0.1,
+    twentieth: 0.2,
+    quarter: 0.25,
+    thirtieth: 0.3,
+    third: 0.33,
+    fortieth: 0.4,
+    fiftieth: 0.5,
+    half: 0.5,
+    sixtieth: 0.6,
+    two-thirds: 0.66,
+    seventieth: 0.7,
+    eightieth: 0.8,
+    ninetieth: 0.9,
+    one: 1,
+    one-tenth: 1.1,
+    one-twentieth: 1.2,
+    one-quarter: 1.25,
+    one-thirtieth: 1.3,
+    one-third: 1.33,
+    one-fortieth: 1.4,
+    one-fiftieth: 1.5,
+    one-half: 1.5,
 ) !default;
 
 /// Headings Styles
@@ -359,11 +455,6 @@ $headings: (
         line-height: map.get($line-height, base),
         margin: 0px 0px 16px 0px,
         padding: 0px,
-        size: calculate-fluid-font(
-                map.get(map.get($font-size-fluid, h1), min),
-                map.get(map.get($font-size-fluid, h1), fluid),
-                map.get(map.get($font-size-fluid, h1), max)
-            ),
         spacing: -1.5,
         weight: map.get($font-weight, light),
     ),
@@ -371,11 +462,6 @@ $headings: (
         line-height: map.get($line-height, 3),
         margin: 0px 0px 12px 0px,
         padding: 0px,
-        size: calculate-fluid-font(
-                map.get(map.get($font-size-fluid, h2), min),
-                map.get(map.get($font-size-fluid, h2), fluid),
-                map.get(map.get($font-size-fluid, h2), max)
-            ),
         spacing: -0.5,
         weight: map.get($font-weight, light),
     ),
@@ -383,11 +469,6 @@ $headings: (
         line-height: map.get($line-height, 4),
         margin: 0px 0px 8px 0px,
         padding: 0px,
-        size: calculate-fluid-font(
-                map.get(map.get($font-size-fluid, h3), min),
-                map.get(map.get($font-size-fluid, h3), fluid),
-                map.get(map.get($font-size-fluid, h3), max)
-            ),
         spacing: 0,
         weight: map.get($font-weight, base),
     ),
@@ -395,11 +476,6 @@ $headings: (
         line-height: map.get($line-height, 5),
         margin: 0px 0px 8px 0px,
         padding: 0px,
-        size: calculate-fluid-font(
-                map.get(map.get($font-size-fluid, h4), min),
-                map.get(map.get($font-size-fluid, h4), fluid),
-                map.get(map.get($font-size-fluid, h4), max)
-            ),
         spacing: 0.25,
         weight: map.get($font-weight, base),
     ),
@@ -407,11 +483,6 @@ $headings: (
         line-height: map.get($line-height, 6),
         margin: 0px 0px 6px 0px,
         padding: 0px,
-        size: calculate-fluid-font(
-                map.get(map.get($font-size-fluid, h5), min),
-                map.get(map.get($font-size-fluid, h5), fluid),
-                map.get(map.get($font-size-fluid, h5), max)
-            ),
         spacing: 0,
         weight: map.get($font-weight, base),
     ),
@@ -419,11 +490,6 @@ $headings: (
         line-height: map.get($line-height, 6),
         margin: 0px 0px 6px 0px,
         padding: 0px,
-        size: calculate-fluid-font(
-                map.get(map.get($font-size-fluid, h6), min),
-                map.get(map.get($font-size-fluid, h6), fluid),
-                map.get(map.get($font-size-fluid, h6), max)
-            ),
         spacing: 0.25,
         weight: map.get($font-weight, bold),
     ),
@@ -436,12 +502,38 @@ $headings: (
 /// Can be defined in pixels or percentage for circular elements.
 $shape-radius: (
     0: 0px,
+    none: 0px,
     1: 4px,
+    extra-small: 4px,
+    extra-small-top: 4px 4px 0 0,
+    extra-small-end: 0 4px 4px 0,
+    extra-small-bottom: 0 0 4px 4px,
+    extra-small-start: 4px 0 0 4px,
     2: 8px,
     3: 10px,
+    medium: 12px,
+    medium-top: 12px 12px 0 0,
+    medium-end: 0 12px 12px 0,
+    medium-bottom: 0 0 12px 12px,
+    medium-start: 12px 0 0 12px,
     4: 16px,
     5: 22px,
+    large: 16px,
+    large-top: 16px 16px 0 0,
+    large-end: 0 16px 16px 0,
+    large-bottom: 0 0 16px 16px,
+    large-start: 16px 0 0 16px,
+    20: 20px,
+    20-top: 20px 20px 0 0,
+    20-end: 0 20px 20px 0,
+    20-bottom: 0 0 20px 20px,
+    20-start: 20px 0 0 20px,
     6: 50%,
+    full: 50%,
+    full-top: 50% 50% 0 0,
+    full-end: 0 50% 50% 0,
+    full-bottom: 0 0 50% 50%,
+    full-start: 50% 0 0 50%,
 ) !default;
 
 /// ========================
@@ -452,86 +544,104 @@ $shape-radius: (
 $elevations: (
     0: (
         1: (
-            alpha: 0.2,
             size: 0px 0px 0px 0px,
+            color: #000,
+            alpha: 0.2,
         ),
         2: (
-            alpha: 0.14,
             size: 0px 0px 0px 0px,
+            color: #000,
+            alpha: 0.14,
         ),
         3: (
-            alpha: 0.12,
             size: 0px 0px 0px 0px,
+            color: #000,
+            alpha: 0.12,
         ),
     ),
     1: (
         1: (
-            alpha: 0.2,
             size: 0px 2px 1px -1px,
+            color: #000,
+            alpha: 0.2,
         ),
         2: (
-            alpha: 0.14,
             size: 0px 1px 1px 0px,
+            color: #000,
+            alpha: 0.14,
         ),
         3: (
-            alpha: 0.12,
             size: 0px 1px 3px 0px,
+            color: #000,
+            alpha: 0.12,
         ),
     ),
     2: (
         1: (
-            alpha: 0.2,
             size: 0px 3px 3px -2px,
+            color: #000,
+            alpha: 0.2,
         ),
         2: (
-            alpha: 0.14,
             size: 0px 3px 4px 0px,
+            color: #000,
+            alpha: 0.14,
         ),
         3: (
-            alpha: 0.12,
             size: 0px 1px 8px 0px,
+            color: #000,
+            alpha: 0.12,
         ),
     ),
     3: (
         1: (
-            alpha: 0.2,
             size: 0px 3px 5px -1px,
+            color: #000,
+            alpha: 0.2,
         ),
         2: (
-            alpha: 0.14,
             size: 0px 6px 10px 0px,
+            color: #000,
+            alpha: 0.14,
         ),
         3: (
-            alpha: 0.12,
             size: 0px 1px 18px 0px,
+            color: #000,
+            alpha: 0.12,
         ),
     ),
     4: (
         1: (
-            alpha: 0.2,
             size: 0px 5px 5px -3px,
+            color: #000,
+            alpha: 0.2,
         ),
         2: (
-            alpha: 0.14,
             size: 0px 8px 10px 1px,
+            color: #000,
+            alpha: 0.14,
         ),
         3: (
-            alpha: 0.12,
             size: 0px 3px 14px 2px,
+            color: #000,
+            alpha: 0.12,
         ),
     ),
     5: (
         1: (
-            alpha: 0.2,
             size: 0px 7px 8px -4px,
+            color: #000,
+            alpha: 0.2,
         ),
         2: (
-            alpha: 0.14,
             size: 0px 12px 17px 2px,
+            color: #000,
+            alpha: 0.14,
         ),
         3: (
-            alpha: 0.12,
             size: 0px 5px 22px 4px,
+            color: #000,
+            alpha: 0.12,
         ),
     ),
 ) !default;
@@ -839,4 +949,21 @@ $colors: (
     white: (
         default: #fff,
     ),
+);
+
+/// ========================
+/// States
+/// ========================
+$states: (
+    state-hover-state-layer-opacity: 0.08,
+    state-hover-state-layer-opacity-forced: 0.2,
+    state-focus-state-layer-opacity: 0.1,
+    state-pressed-state-layer-opacity: 0.1,
+    state-disabled-opacity: 0.38,
+    state-disabled-outline-opacity: 0.12,
+    state-disabled-container-opacity: 0.04,
+);
+
+$opacity: (
+    disabled: 0.38,
 );

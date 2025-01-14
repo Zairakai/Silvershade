@@ -2,7 +2,7 @@
 @use 'sass:map';
 @use 'sass:meta';
 @use 'sass:string';
-@use '../index' as SylverShade;
+@use '../index' as Silvershade;
 
 /// Global flags to determine the color scheme being used.
 /// The flags control the active color scheme (dark, light, or material colors).
@@ -192,7 +192,9 @@ $final-colors: ();
                 --#{$key}: #{$hexa};
 
                 @if 1 == string.index(meta.inspect($hexa), '#') and 7 == string.length(meta.inspect($hexa)) {
-                    --#{$key}-rgb: #{SylverShade.color-rgb($hexa)};
+                    $rgbMap: Silvershade.color-rgb($hexa, false);
+
+                    --#{$key}-rgb: #{map.get($rgbMap, red)} #{map.get($rgbMap, green)} #{map.get($rgbMap, blue)};
                 }
             }
         }
@@ -203,20 +205,24 @@ $final-colors: ();
 @if $material-colors {
     @at-root {
         :root {
-            @each $key-color, $map-color in SylverShade.$colors {
+            @each $key-color, $map-color in Silvershade.$colors {
                 @each $key, $hexa in $map-color {
                     @if 'default' == $key {
                         --#{$key-color}: #{$hexa};
 
                         @if 1 == string.index(meta.inspect($hexa), '#') and 7 == string.length(meta.inspect($hexa)) {
-                            --#{$key-color}-rgb: #{SylverShade.color-rgb($hexa)};
+                            $rgbMap: Silvershade.color-rgb($hexa, false);
+
+                            --#{$key-color}-rgb: #{map.get($rgbMap, red)} #{map.get($rgbMap, green)} #{map.get($rgbMap, blue)};
                         }
                     }
 
                     --#{$key-color}-#{$key}: #{$hexa};
 
                     @if 1 == string.index(meta.inspect($hexa), '#') and 7 == string.length(meta.inspect($hexa)) {
-                        --#{$key-color}-#{$key}-rgb: #{SylverShade.color-rgb($hexa)};
+                        $rgbMap: Silvershade.color-rgb($hexa, false);
+
+                        --#{$key-color}-#{$key}-rgb: #{map.get($rgbMap, red)} #{map.get($rgbMap, green)} #{map.get($rgbMap, blue)};
                     }
                 }
             }

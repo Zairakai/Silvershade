@@ -1,8 +1,11 @@
+@use 'sass:color';
+@use 'sass:list';
 @use 'sass:map';
 @use 'sass:math';
-@use 'sass:color';
-@use 'variables' as SylverShadeVariables;
-@use 'functions' as SylverShadeFunctions;
+@use 'sass:meta';
+@use 'sass:string';
+@use 'variables' as SilvershadeVariables;
+@use 'functions' as SilvershadeFunctions;
 
 /// Mixin to cut corners of an element using a `clip-path` polygon.
 /// This mixin allows you to cut corners of an element in a polygonal shape.
@@ -14,7 +17,7 @@
     $corners: $values;
 
     @if null != $symmetry {
-        $corners: SylverShadeFunctions.corners-cut-symmetry($values, $symmetry);
+        $corners: SilvershadeFunctions.corners-cut-symmetry($values, $symmetry);
     }
 
     $top-left: map.get($corners, top-left, 0);
@@ -24,14 +27,14 @@
 
     // prettier-ignore
     clip-path: polygon(
-        0 #{SylverShadeFunctions.px-to-rem($top-left, (force-zero-rem: true))},
-        #{SylverShadeFunctions.px-to-rem($top-left, (force-zero-rem: true))} 0,
-        calc(100% - #{SylverShadeFunctions.px-to-rem($top-right, (force-zero-rem: true))}) 0,
-        100% #{SylverShadeFunctions.px-to-rem($top-right, (force-zero-rem: true))},
-        100% calc(100% - #{SylverShadeFunctions.px-to-rem($bottom-right, (force-zero-rem: true))}),
-        calc(100% - #{SylverShadeFunctions.px-to-rem($bottom-right, (force-zero-rem: true))}) 100%,
-        #{SylverShadeFunctions.px-to-rem($bottom-left, (force-zero-rem: true))} 100%,
-        0 calc(100% - #{SylverShadeFunctions.px-to-rem($bottom-left, (force-zero-rem: true))})
+        0 #{SilvershadeFunctions.px-to-rem($top-left, (force-zero-rem: true))},
+        #{SilvershadeFunctions.px-to-rem($top-left, (force-zero-rem: true))} 0,
+        calc(100% - #{SilvershadeFunctions.px-to-rem($top-right, (force-zero-rem: true))}) 0,
+        100% #{SilvershadeFunctions.px-to-rem($top-right, (force-zero-rem: true))},
+        100% calc(100% - #{SilvershadeFunctions.px-to-rem($bottom-right, (force-zero-rem: true))}),
+        calc(100% - #{SilvershadeFunctions.px-to-rem($bottom-right, (force-zero-rem: true))}) 100%,
+        #{SilvershadeFunctions.px-to-rem($bottom-left, (force-zero-rem: true))} 100%,
+        0 calc(100% - #{SilvershadeFunctions.px-to-rem($bottom-left, (force-zero-rem: true))})
     );
 }
 
@@ -42,12 +45,12 @@
 /// @param {color} $color - The shadow color (default: `#000`).
 @mixin elevation($elevation: 0, $color: #000) {
     box-shadow:
-        SylverShadeFunctions.px-to-rem(SylverShadeFunctions.get-elevation-value($elevation, 1, 'size'))
-            SylverShadeFunctions.color-alpha($color, SylverShadeFunctions.get-elevation-value($elevation, 1, 'alpha')),
-        SylverShadeFunctions.px-to-rem(SylverShadeFunctions.get-elevation-value($elevation, 2, 'size'))
-            SylverShadeFunctions.color-alpha($color, SylverShadeFunctions.get-elevation-value($elevation, 2, 'alpha')),
-        SylverShadeFunctions.px-to-rem(SylverShadeFunctions.get-elevation-value($elevation, 3, 'size'))
-            SylverShadeFunctions.color-alpha($color, SylverShadeFunctions.get-elevation-value($elevation, 3, 'alpha'));
+        SilvershadeFunctions.px-to-rem(SilvershadeFunctions.get-elevation-value($elevation, 1, 'size'))
+            SilvershadeFunctions.color-alpha($color, SilvershadeFunctions.get-elevation-value($elevation, 1, 'alpha')),
+        SilvershadeFunctions.px-to-rem(SilvershadeFunctions.get-elevation-value($elevation, 2, 'size'))
+            SilvershadeFunctions.color-alpha($color, SilvershadeFunctions.get-elevation-value($elevation, 2, 'alpha')),
+        SilvershadeFunctions.px-to-rem(SilvershadeFunctions.get-elevation-value($elevation, 3, 'size'))
+            SilvershadeFunctions.color-alpha($color, SilvershadeFunctions.get-elevation-value($elevation, 3, 'alpha'));
 }
 
 /// Mixin to handle media queries based on breakpoints and orientation.
@@ -58,14 +61,14 @@
 /// @param {string} $range - Range type (e.g., `min`, `max`, `both`).
 @mixin media-queries($key: null, $orientation: null, $range: min) {
     // prettier-ignore
-    @if $orientation != null and not map.has-key(SylverShadeVariables.$breakpoints, $orientation) {
+    @if $orientation != null and not map.has-key(SilvershadeVariables.$breakpoints, $orientation) {
         @error "Orientation '#{$orientation}' not available. Use 'landscape' or 'portrait'.";
     }
 
     $breakpoints: if(
         null != $orientation,
-        map.get(SylverShadeVariables.$breakpoints, $orientation),
-        SylverShadeVariables.$breakpoints
+        map.get(SilvershadeVariables.$breakpoints, $orientation),
+        SilvershadeVariables.$breakpoints
     );
 
     // Parcours des breakpoints pour chaque orientation
@@ -113,7 +116,7 @@
     $media-query: '';
 
     @if 'min' == $range or 'both' == $range {
-        $min-width: SylverShadeFunctions.px-to-rem(map.get($config, min-width));
+        $min-width: SilvershadeFunctions.px-to-rem(map.get($config, min-width));
         $media-query: '#{$media-query} (min-width: #{$min-width})';
     }
 
@@ -122,7 +125,7 @@
             $media-query: '#{$media-query} and ';
         }
 
-        $max-width: SylverShadeFunctions.px-to-rem(map.get($config, max-width));
+        $max-width: SilvershadeFunctions.px-to-rem(map.get($config, max-width));
         $media-query: '#{$media-query}(max-width: #{$max-width})';
     }
 
@@ -141,13 +144,13 @@
 /// @throws {Error} If an invalid corner or side is provided.
 @mixin shape($shape, $cornerOrSide: null) {
     $radius: if(
-        map.has-key(SylverShadeVariables.$shape-radius, $shape),
-        map.get(SylverShadeVariables.$shape-radius, $shape),
+        map.has-key(SilvershadeVariables.$shape-radius, $shape),
+        map.get(SilvershadeVariables.$shape-radius, $shape),
         $shape
     );
 
     @if '%' != math.unit($radius) {
-        $radius: SylverShadeFunctions.px-to-rem($radius);
+        $radius: SilvershadeFunctions.px-to-rem($radius);
     }
 
     $top-left: 0;
@@ -199,33 +202,33 @@
     height: 0;
 
     @if 'up' == $direction {
-        border-left: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
-        border-right: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
-        border-bottom: SylverShadeFunctions.px-to-rem($size) solid $color;
+        border-left: SilvershadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: SilvershadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: SilvershadeFunctions.px-to-rem($size) solid $color;
     } @else if 'right' == $direction {
-        border-top: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
-        border-bottom: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
-        border-left: SylverShadeFunctions.px-to-rem($size) solid $color;
+        border-top: SilvershadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: SilvershadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-left: SilvershadeFunctions.px-to-rem($size) solid $color;
     } @else if 'down' == $direction {
-        border-left: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
-        border-right: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
-        border-top: SylverShadeFunctions.px-to-rem($size) solid $color;
+        border-left: SilvershadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: SilvershadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-top: SilvershadeFunctions.px-to-rem($size) solid $color;
     } @else if 'left' == $direction {
-        border-top: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
-        border-bottom: SylverShadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
-        border-right: SylverShadeFunctions.px-to-rem($size) solid $color;
+        border-top: SilvershadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-bottom: SilvershadeFunctions.px-to-rem(math.div($size, 2)) solid transparent;
+        border-right: SilvershadeFunctions.px-to-rem($size) solid $color;
     } @else if 'top-right' == $direction {
-        border-bottom: SylverShadeFunctions.px-to-rem($size) solid $color;
-        border-left: SylverShadeFunctions.px-to-rem($size) solid transparent;
+        border-bottom: SilvershadeFunctions.px-to-rem($size) solid $color;
+        border-left: SilvershadeFunctions.px-to-rem($size) solid transparent;
     } @else if 'bottom-right' == $direction {
-        border-top: SylverShadeFunctions.px-to-rem($size) solid $color;
-        border-left: SylverShadeFunctions.px-to-rem($size) solid transparent;
+        border-top: SilvershadeFunctions.px-to-rem($size) solid $color;
+        border-left: SilvershadeFunctions.px-to-rem($size) solid transparent;
     } @else if 'bottom-left' == $direction {
-        border-top: SylverShadeFunctions.px-to-rem($size) solid $color;
-        border-right: SylverShadeFunctions.px-to-rem($size) solid transparent;
+        border-top: SilvershadeFunctions.px-to-rem($size) solid $color;
+        border-right: SilvershadeFunctions.px-to-rem($size) solid transparent;
     } @else if 'top-left' == $direction {
-        border-bottom: SylverShadeFunctions.px-to-rem($size) solid $color;
-        border-right: SylverShadeFunctions.px-to-rem($size) solid transparent;
+        border-bottom: SilvershadeFunctions.px-to-rem($size) solid $color;
+        border-right: SilvershadeFunctions.px-to-rem($size) solid transparent;
     } @else {
         @error "Invalid direction `#{$direction}`. Valid directions are: up, right, down, left, top-right, bottom-right, bottom-left, top-left.";
     }
@@ -250,11 +253,11 @@
 ///
 /// @param {number} $columns - Number of columns (default is `$default-grid-columns`).
 /// @param {string|number} $gap - Gap size (default is small spacing using `get-spacing()` function).
-@mixin grid($columns: SylverShadeVariables.$default-grid-columns, $gap: SylverShadeFunctions.get-spacing('sm', true)) {
+@mixin grid($columns: SilvershadeVariables.$default-grid-columns, $gap: SilvershadeFunctions.get-spacing('sm', true)) {
     display: grid;
     grid-template-columns: repeat($columns, 1fr);
     grid-template-rows: auto;
-    gap: SylverShadeFunctions.px-to-rem($gap);
+    gap: SilvershadeFunctions.px-to-rem($gap);
 }
 
 /// Mixin to add padding to an element.
@@ -267,7 +270,7 @@
     $bottom: map.get($spacings, bottom, $top);
     $left: map.get($spacings, left, $right);
 
-    padding: SylverShadeFunctions.px-to-rem($top $right $bottom $left);
+    padding: SilvershadeFunctions.px-to-rem($top $right $bottom $left);
 }
 
 /// Mixin to generate utility classes for padding and margin based on a given property and value.
@@ -280,46 +283,251 @@
 @mixin generate-spacing-utilities($key, $value, $placeholder, $property) {
     /// Generate the class for all sides (padding or margin)
     %#{$placeholder}-#{$key} {
-        #{$property}: SylverShadeFunctions.px-to-rem($value);
+        #{$property}: SilvershadeFunctions.px-to-rem($value);
     }
 
     /// Generate the class for the top side (padding-top or margin-top)
     %#{$placeholder}t-#{$key} {
-        #{$property}-top: SylverShadeFunctions.px-to-rem($value);
+        #{$property}-top: SilvershadeFunctions.px-to-rem($value);
     }
 
     /// Generate the class for the right side (padding-right or margin-right)
     %#{$placeholder}r-#{$key} {
-        #{$property}-right: SylverShadeFunctions.px-to-rem($value);
+        #{$property}-right: SilvershadeFunctions.px-to-rem($value);
     }
 
     /// Generate the class for the bottom side (padding-bottom or margin-bottom)
     %#{$placeholder}b-#{$key} {
-        #{$property}-bottom: SylverShadeFunctions.px-to-rem($value);
+        #{$property}-bottom: SilvershadeFunctions.px-to-rem($value);
     }
 
     /// Generate the class for the left side (padding-left or margin-left)
     %#{$placeholder}l-#{$key} {
-        #{$property}-left: SylverShadeFunctions.px-to-rem($value);
+        #{$property}-left: SilvershadeFunctions.px-to-rem($value);
     }
 
     /// Generate the class for vertical sides (top and bottom)
     %#{$placeholder}v-#{$key} {
-        #{$property}-top: SylverShadeFunctions.px-to-rem($value);
-        #{$property}-bottom: SylverShadeFunctions.px-to-rem($value);
+        #{$property}-top: SilvershadeFunctions.px-to-rem($value);
+        #{$property}-bottom: SilvershadeFunctions.px-to-rem($value);
     }
 
     /// Generate the class for horizontal sides (left and right)
     %#{$placeholder}h-#{$key} {
-        #{$property}-right: SylverShadeFunctions.px-to-rem($value);
-        #{$property}-left: SylverShadeFunctions.px-to-rem($value);
+        #{$property}-right: SilvershadeFunctions.px-to-rem($value);
+        #{$property}-left: SilvershadeFunctions.px-to-rem($value);
+    }
+}
+
+/// Mixin pour exporter les variables CSS
+@mixin export-css-variables($data: null) {
+    $used-vars: SilvershadeVariables.get-used-variables();
+
+    @at-root {
+        :root {
+            @include export-breakpoints($used-vars);
+            @include export-containers($used-vars);
+            @include export-grid($used-vars);
+            @include export-spacings($used-vars);
+            @include export-typography($used-vars);
+            @include export-shapes($used-vars);
+            @include export-elevations($used-vars);
+            @include export-states($used-vars);
+            @include export-opacity($used-vars);
+            @include export-colors($used-vars);
+
+            @if null != $data {
+                @include export-data($used-vars, $data);
+            }
+        }
+    }
+}
+
+@function is-used($var-name, $used-vars) {
+    @return list.index($used-vars, $var-name) != null;
+}
+
+@mixin export-if-used($var-name, $value, $used-vars) {
+    @if is-used($var-name, $used-vars) {
+        --#{$var-name}: #{$value};
+    }
+}
+
+@mixin export-breakpoints($used-vars) {
+    @each $orientation, $valueMaps in SilvershadeVariables.$breakpoints {
+        @each $keySize, $valueSizes in $valueMaps {
+            @each $key, $value in $valueSizes {
+                @include export-if-used(
+                    'breakpoint-#{$orientation}-#{$keySize}-#{$key}',
+                    SilvershadeFunctions.px-to-rem($value),
+                    $used-vars
+                );
+            }
+        }
+    }
+}
+
+@mixin export-containers($used-vars) {
+    @each $orientation, $valueMaps in SilvershadeVariables.$containers {
+        @each $key, $value in $valueMaps {
+            @include export-if-used(
+                'container-#{$orientation}-#{$key}',
+                SilvershadeFunctions.px-to-rem($value),
+                $used-vars
+            );
+        }
+    }
+}
+
+@mixin export-grid($used-vars) {
+    @for $i from 1 to 13 {
+        @include export-if-used('grid-cols-#{$i}', $i, $used-vars);
+    }
+
+    @each $orientation, $valueMaps in SilvershadeVariables.$grids {
+        @each $keySize, $valueSizes in $valueMaps {
+            @each $key, $value in $valueSizes {
+                $var-name: 'grid-#{$orientation}-#{$keySize}-#{$key}';
+                $var-value: if('gap' == $key, SilvershadeFunctions.px-to-rem($value), $value);
+
+                @include export-if-used($var-name, $var-value, $used-vars);
+            }
+        }
+    }
+}
+
+@mixin export-spacings($used-vars) {
+    @each $key, $value in SilvershadeVariables.$spacings {
+        @include export-if-used('spacing-#{$key}', SilvershadeFunctions.px-to-rem($value), $used-vars);
+    }
+}
+
+@mixin export-opacity($used-vars) {
+    @each $key, $value in SilvershadeVariables.$opacity {
+        @include export-if-used('opacity-#{$key}', $value, $used-vars);
+    }
+}
+
+@mixin export-typography($used-vars) {
+    $typography-map: (
+        'ff': SilvershadeVariables.$font-family,
+        'fw': SilvershadeVariables.$font-weight,
+        'fs': SilvershadeVariables.$font-size,
+        'lh': SilvershadeVariables.$line-height,
+        'ls': SilvershadeVariables.$letter-spacings,
+    );
+
+    @each $type, $values in $typography-map {
+        @each $key, $value in $values {
+            $var-value: if(
+                'fs' == $type or 'lh' == $type,
+                SilvershadeFunctions.px-to-rem($value),
+                $value
+            );
+
+            @include export-if-used('typo-#{$type}-#{$key}', $var-value, $used-vars);
+        }
+    }
+
+    @each $key, $valueMaps in SilvershadeVariables.$font-size-fluid {
+        $var-name: 'font-size-fluid-#{$key}';
+        $var-value: clamp(
+            #{SilvershadeFunctions.px-to-rem(map.get($valueMaps, min))},
+            #{map.get($valueMaps, fluid)},
+            #{SilvershadeFunctions.px-to-rem(map.get($valueMaps, max))}
+        );
+
+        @include export-if-used($var-name, $var-value, $used-vars);
+    }
+
+    @each $key, $valueMaps in SilvershadeVariables.$headings {
+        @each $prop in ('line-height', 'margin', 'padding', 'font-size', 'letter-spacing', 'font-weight') {
+            $var-name: 'h#{$key}-#{$prop}';
+            $var-value: map.get($valueMaps, $prop);
+
+            @if 'margin' == $prop or 'padding' == $prop {
+                $var-value: SilvershadeFunctions.px-to-rem($var-value);
+            } @else if 'font-size' == $prop {
+                $var-value: var(--font-size-fluid-h#{$key});
+            }
+
+            @include export-if-used($var-name, $var-value, $used-vars);
+        }
+    }
+}
+
+@mixin export-shapes($used-vars) {
+    @each $key, $value in SilvershadeVariables.$shape-radius {
+        $var-value: SilvershadeFunctions.px-to-rem($value);
+
+        @include export-if-used('shape-#{$key}', $var-value, $used-vars);
+    }
+}
+
+@mixin export-elevations($used-vars) {
+    @each $key, $value in SilvershadeVariables.$elevations {
+        $var-name: 'elevation-#{$key}';
+
+        @if is-used($var-name, $used-vars) {
+            $shadows: ();
+
+            @each $step, $properties in $value {
+                $shadows: list.append(
+                    $shadows,
+                    #{SilvershadeFunctions.px-to-rem(map.get($properties, size))}
+                        #{SilvershadeFunctions.color-alpha(map.get($properties, color), map.get($properties, alpha))}
+                );
+            }
+
+            $combined-shadow: list.join($shadows, (), $separator: comma);
+
+            --#{$var-name}: #{$combined-shadow};
+        }
+    }
+}
+
+@mixin export-states($used-vars) {
+    @each $key, $value in SilvershadeVariables.$states {
+        @include export-if-used($key, $value, $used-vars);
+    }
+}
+
+@mixin export-colors($used-vars) {
+    @each $key-color, $map-color in SilvershadeVariables.$colors {
+        @each $key, $hexa in $map-color {
+            $var-name: if('default' == $key, $key-color, '#{$key-color}-#{$key}');
+
+            @if is-used($var-name, $used-vars) {
+                --#{$var-name}: #{$hexa};
+
+                @if 1 == string.index(meta.inspect($hexa), '#') and (7 == string.length(meta.inspect($hexa)) or 4 == string.length(meta.inspect($hexa))) {
+                    $rgbMap: SilvershadeFunctions.color-rgb($hexa, false);
+
+                    --#{$var-name}-rgb: #{map.get($rgbMap, red)} #{map.get($rgbMap, green)} #{map.get($rgbMap, blue)};
+                }
+            }
+        }
+    }
+}
+
+@mixin export-data($used-vars, $data) {
+    @each $key, $hexa in $data {
+        @if is-used($key, $used-vars) {
+            --#{$key}: #{$hexa};
+
+            @if 1 == string.index(meta.inspect($hexa), '#') and (7 == string.length(meta.inspect($hexa)) or 4 == string.length(meta.inspect($hexa))) {
+                $rgbMap: SilvershadeFunctions.color-rgb($hexa, false);
+
+                --#{$key}-rgb: #{map.get($rgbMap, red)} #{map.get($rgbMap, green)} #{map.get($rgbMap, blue)};
+            }
+        }
     }
 }
 
 /// Mixin to add padding to an element.
 @mixin p($key, $direction: null) {
-    $value: if(map.has-key(SylverShadeVariables.$spacings, $key), map.get(SylverShadeVariables.$spacings, $key), 0);
-    $value: SylverShadeFunctions.px-to-rem($value);
+    $value: if(map.has-key(SilvershadeVariables.$spacings, $key), map.get(SilvershadeVariables.$spacings, $key), 0);
+    $value: SilvershadeFunctions.px-to-rem($value);
 
     @if 't' == $direction {
         padding-top: $value;
@@ -342,8 +550,8 @@
 
 /// Mixin to add padding to an element.
 @mixin m($key, $direction: null) {
-    $value: if(map.has-key(SylverShadeVariables.$spacings, $key), map.get(SylverShadeVariables.$spacings, $key), 0);
-    $value: SylverShadeFunctions.px-to-rem($value);
+    $value: if(map.has-key(SilvershadeVariables.$spacings, $key), map.get(SilvershadeVariables.$spacings, $key), 0);
+    $value: SilvershadeFunctions.px-to-rem($value);
 
     @if 't' == $direction {
         margin-top: $value;
