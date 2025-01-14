@@ -1,7 +1,7 @@
 @use 'sass:map';
-@use 'variables' as SylverShadeVariables;
-@use 'functions' as SylverShadeFunctions;
-@use 'mixins' as SylverShadeMixins;
+@use 'variables' as SilvershadeVariables;
+@use 'functions' as SilvershadeFunctions;
+@use 'mixins' as SilvershadeMixins;
 
 /// Documentation for grid.scss
 /// This file defines grid utility classes for layout systems based on a configurable grid system.
@@ -11,22 +11,22 @@
 /// Grid placeholder to generate grid layout styles with responsive columns and gutters.
 %grid {
     /// Include the basic grid mixin to define the grid container
-    @include SylverShadeMixins.grid;
+    @include SilvershadeMixins.grid;
 
     /// Generate grid column classes based on a range of values from 1 to 13
     @for $i from 1 to 13 {
         /// Generate grid column class for each number of columns (e.g. %grid-cols-1, %grid-cols-2, etc.)
         &-cols-#{$i} {
-            @include SylverShadeMixins.grid($i);
+            @include SilvershadeMixins.grid($i);
         }
     }
 
     /// Loop through the grid configurations for different screen sizes and directions
-    @each $direction, $sizes in SylverShadeVariables.$grids {
+    @each $direction, $sizes in SilvershadeVariables.$grids {
         @each $size, $config in $sizes {
             /// Generate media queries for each grid size configuration (columns and gutter)
-            @include SylverShadeMixins.media-queries($size, $direction) {
-                @include SylverShadeMixins.grid(map.get($config, 'columns'), map.get($config, 'gutter'));
+            @include SilvershadeMixins.media-queries($size, $direction) {
+                @include SilvershadeMixins.grid(map.get($config, 'cols'), map.get($config, 'gap'));
             }
         }
     }
